@@ -14,7 +14,7 @@ void LifeGrid::Randomize()
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
-      _currentGen[x][y] = juce::Random::getSystemRandom().nextInt(kMaxCellState);
+      _currentGen[x][y] = juce::Random::getSystemRandom().nextInt(kMaxCellStateExclusive);
     }
   }
 }

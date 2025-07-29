@@ -17,7 +17,7 @@ public:
 private:
   int CountLiveNeighbours(int x, int y) const;
 
-  static constexpr int kMaxCellState = 2; // We use binary states: 0 = dead, 1 = alive
+  static constexpr int kMaxCellStateExclusive = 2;
   int _gridWidth;
   int _gridHeight;
   std::vector<std::vector<int>> _currentGen;
