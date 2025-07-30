@@ -10,9 +10,18 @@ public:
   void resized() override;
   void timerCallback() override;
 
+  void toggleplayPause();
+  void setCellSize(int width, int height);
+  void setGridSize(int width, int height);
+
+  void mouseDown(const juce::MouseEvent& event);
+  void mouseDrag(const juce::MouseEvent& event);
+  void mouseUp(const juce::MouseEvent& event);
+
 private:
   LifeGrid _grid;
-  const int _cellSize = 10;
-  static constexpr int kTempGridSizeX = 80;
-  static constexpr int kTempGridSizeY = 60;
+  bool _isPlaying = true;
+  juce::Point<float> _cellPaintSize;
+  bool _isDragging = false;
+  bool _dragModeErase = false;
 };

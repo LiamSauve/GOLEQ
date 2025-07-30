@@ -13,6 +13,7 @@ public:
   int GetCell(int x, int y) const;
   int GetWidth() const;
   int GetHeight() const;
+  void SetSize(int newWidth, int newHeight);
 
 private:
   int CountLiveNeighbours(int x, int y) const;
