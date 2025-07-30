@@ -1,14 +1,7 @@
-/*
-  ==============================================================================
-    This file contains the basic framework code for a JUCE plugin editor.
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "UIConstants.h"
 
-//==============================================================================
 GOLEQAudioProcessorEditor::GOLEQAudioProcessorEditor(GOLEQAudioProcessor& p)
   : AudioProcessorEditor(&p), audioProcessor(p)
 {
@@ -26,7 +19,6 @@ GOLEQAudioProcessorEditor::~GOLEQAudioProcessorEditor()
 {
 }
 
-//==============================================================================
 void GOLEQAudioProcessorEditor::ResizeGrid(int newWidth, int newHeight)
 {
   _lifeGridComponent.setGridSize(newWidth, newHeight);
@@ -40,10 +32,8 @@ void GOLEQAudioProcessorEditor::paint(juce::Graphics& g)
 void GOLEQAudioProcessorEditor::resized()
 {
   auto bounds = getLocalBounds();
-
   auto simHeight = bounds.getHeight() * 2 / 3;
   auto simBounds = bounds.removeFromTop(simHeight);
-
   auto controlPanelBounds = bounds;
 
   _lifeGridComponent.setBounds(simBounds);
