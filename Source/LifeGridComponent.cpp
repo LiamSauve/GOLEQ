@@ -18,7 +18,7 @@ void LifeGridComponent::paint(juce::Graphics& g)
 
   const float originX = bounds.getX();
   const float originY = bounds.getY();
-  const juce::Colour deadColour = juce::Colours::darkgrey.withAlpha(0.2f);
+  const juce::Colour deadColour = juce::Colours::transparentBlack;
 
   for (int y = 0; y < _life.GetHeight(); ++y)
   {

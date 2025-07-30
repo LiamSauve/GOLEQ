@@ -91,10 +91,12 @@ void ControlPanelComponent::InitializeControls()
   _caVariantDropdown.addItem(GOLEQ_Constants::CA_Conway_Label, GOLEQ_Constants::CAVariant::Conway);
   _caVariantDropdown.addItem(GOLEQ_Constants::CA_HighLife_Label, GOLEQ_Constants::CAVariant::HighLife);
   _caVariantDropdown.addItem(GOLEQ_Constants::CA_Seeds_Label, GOLEQ_Constants::CAVariant::Seeds);
+  _caVariantDropdown.setSelectedId(GOLEQ_Constants::CAVariant::Conway);
 
-  _effectDropdown.addItem(GOLEQ_Constants::Effect_EQ_Label, 1);
-  _effectDropdown.addItem(GOLEQ_Constants::Effect_Bitcrusher_Label, 2);
-  _effectDropdown.addItem(GOLEQ_Constants::Effect_Reverb_Label, 3);
+  _effectDropdown.addItem(GOLEQ_Constants::Effect_EQ_Label, GOLEQ_Constants::EffectType::EQ);
+  _effectDropdown.addItem(GOLEQ_Constants::Effect_Bitcrusher_Label, GOLEQ_Constants::EffectType::Bitcrusher);
+  _effectDropdown.addItem(GOLEQ_Constants::Effect_Reverb_Label, GOLEQ_Constants::EffectType::Reverb);
+  _effectDropdown.setSelectedId(GOLEQ_Constants::EffectType::EQ);
 
   _playPauseButton.setButtonText(GOLEQ_Constants::PlayPauseLabel);
   _randomizeButton.setButtonText(GOLEQ_Constants::RandomizeLabel);
