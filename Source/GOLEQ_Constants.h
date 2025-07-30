@@ -1,4 +1,5 @@
 #pragma once
+#include <JuceHeader.h>
 
 namespace GOLEQ_Constants
 {
@@ -54,12 +55,10 @@ namespace GOLEQ_Constants
     Seeds
   };
 
-
   enum EffectType
   {
     EQ = 1,
     Bitcrusher,
     Reverb
   };
-
 }

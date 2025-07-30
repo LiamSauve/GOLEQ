@@ -21,6 +21,16 @@ juce::TextButton& ControlPanelComponent::GetNextGenerationButton()
   return _nextGenerationButton;
 }
 
+juce::ComboBox& ControlPanelComponent::GetCAVariantDropdown()
+{
+  return _caVariantDropdown;
+}
+
+juce::ComboBox& ControlPanelComponent::GetEffectTypeDropdown()
+{
+  return _effectDropdown;
+}
+
 juce::Slider& ControlPanelComponent::GetWidthSlider()
 {
   return _widthSlider;

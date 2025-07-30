@@ -82,6 +82,16 @@ void LifeGridComponent::NextGeneration()
   repaint();
 }
 
+void LifeGridComponent::SetCAVariant(GOLEQ_Constants::CAVariant variant)
+{
+  
+}
+
+void LifeGridComponent::SetEffectType(GOLEQ_Constants::EffectType effectType)
+{
+
+}
+
 void LifeGridComponent::mouseDown(const juce::MouseEvent& event)
 {
   const auto [gridX, gridY] = GetGridCoordsFromMouse(event);

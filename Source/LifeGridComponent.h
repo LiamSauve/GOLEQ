@@ -15,6 +15,8 @@ public:
   void SetGridSize(int width, int height);
   void Randomize();
   void NextGeneration();
+  void SetCAVariant(GOLEQ_Constants::CAVariant variant);
+  void SetEffectType(GOLEQ_Constants::EffectType effectType);
 
   void mouseDown(const juce::MouseEvent& event);
   void mouseDrag(const juce::MouseEvent& event);

@@ -1,10 +1,12 @@
 #include "Life.h"
+#include "GOLEQ_Constants.h"
 
 Life::Life(int width, int height)
   : _gridWidth(width),
   _gridHeight(height),
   _currentGen(width, std::vector<int>(height, 0)),
-  _nextGen(width, std::vector<int>(height, 0))
+  _nextGen(width, std::vector<int>(height, 0)),
+  _caVariant(GOLEQ_Constants::CAVariant::Conway)
 {
 }
 
@@ -20,6 +22,25 @@ void Life::Randomize()
 }
 
 void Life::Update()
+{
+  switch (_caVariant)
+  {
+  case GOLEQ_Constants::Conway:
+    Update_Conway();
+    break;
+  case GOLEQ_Constants::HighLife:
+    Update_Highlife();
+    break;
+  case GOLEQ_Constants::Seeds:
+    Update_Seeds();
+    break;
+  default:
+    Update_Conway();
+    break;
+  }
+}
+
+void Life::Update_Conway()
 {
   // Conway's rules:
   // If alive:
@@ -39,6 +60,16 @@ void Life::Update()
     }
   }
   std::swap(_currentGen, _nextGen);
+}
+
+void Life::Update_Highlife()
+{
+  Update_Conway();
+}
+
+void Life::Update_Seeds()
+{
+  Update_Conway();
 }
 
 void Life::ToggleCell(int x, int y)
@@ -156,4 +187,9 @@ int Life::CountLiveNeighbours(int x, int y) const
   }
 
   return liveCount;
+}
+
+void Life::SetCAVariant(GOLEQ_Constants::CAVariant caVariant)
+{
+  _caVariant = caVariant;
 }

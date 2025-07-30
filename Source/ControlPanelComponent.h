@@ -10,6 +10,8 @@ public:
   juce::TextButton& GetPlayPauseButton();
   juce::TextButton& GetRandomizeButton();
   juce::TextButton& GetNextGenerationButton();
+  juce::ComboBox& GetCAVariantDropdown();
+  juce::ComboBox& GetEffectTypeDropdown();
   juce::Slider& GetWidthSlider();
   juce::Slider& GetHeightSlider();
 

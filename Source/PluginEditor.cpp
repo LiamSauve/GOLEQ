@@ -60,16 +60,32 @@ void GOLEQAudioProcessorEditor::buttonClicked(juce::Button* button)
   if (button == &_controlPanelComponent.GetPlayPauseButton())
   {
     _lifeGridComponent.TogglePlayPause();
+    return;
   }
 
   if (button == &_controlPanelComponent.GetRandomizeButton())
   {
     _lifeGridComponent.Randomize();
+    return;
   }
   
   if (button == &_controlPanelComponent.GetNextGenerationButton())
   {
     _lifeGridComponent.NextGeneration();
+    return;
+  }
+}
+
+void GOLEQAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBox)
+{
+  if (comboBox == &_controlPanelComponent.GetCAVariantDropdown())
+  {
+    return;
+  }
+
+  if (comboBox == &_controlPanelComponent.GetEffectTypeDropdown())
+  {
+    return;
   }
 }
 
@@ -80,4 +96,6 @@ void GOLEQAudioProcessorEditor::AttachListeners()
   _controlPanelComponent.GetPlayPauseButton().addListener(this);
   _controlPanelComponent.GetRandomizeButton().addListener(this);
   _controlPanelComponent.GetNextGenerationButton().addListener(this);
+  _controlPanelComponent.GetCAVariantDropdown().addListener(this);
+  _controlPanelComponent.GetEffectTypeDropdown().addListener(this);
 }
