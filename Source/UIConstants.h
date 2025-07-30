@@ -5,7 +5,7 @@ namespace UIConstants
   // Window Dimensions
   static constexpr int WindowWidth = 1280;
   static constexpr int WindowHeight = 1080;
-  static constexpr int SimHeight = 720;
+  static constexpr int SimulationHeight = 720;
 
   // Control Panel: Button & Toggle Labels
   static constexpr auto PlayPauseLabel = "Play / Pause";
@@ -30,12 +30,13 @@ namespace UIConstants
 
   // Control Panel: Simulation Size Sliders
   static constexpr int SimWidthMin = 32;
-  static constexpr int SimWidthMax = 1280;
+  static constexpr int SimWidthMax = 128;
   static constexpr int SimHeightMin = 18;
-  static constexpr int SimHeightMax = 720;
+  static constexpr int SimHeightMax = 72;
   static constexpr int SimSizeSliderInterval = 1;
 
   // Control Panel: Layout Dimensions & Styling
+  static constexpr int CellPaintSize = 10;
   static constexpr int ComponentPadding = 10;
   static constexpr int ControlHeight = 30;
   static constexpr int ControlMinWidth = 100;

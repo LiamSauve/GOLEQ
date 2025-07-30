@@ -64,13 +64,15 @@ void ControlPanelComponent::InitializeControls()
   _timeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
   _timeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
 
-  _widthSlider.setRange(UIConstants::SimWidthMin, UIConstants::SimWidthMax, UIConstants::SimSizeSliderInterval);
-  _widthSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-  _widthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
-
-  _heightSlider.setRange(UIConstants::SimHeightMin, UIConstants::SimHeightMax, UIConstants::SimSizeSliderInterval);
-  _heightSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-  _heightSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
+  //_widthSlider.setRange(UIConstants::SimWidthMin, UIConstants::SimWidthMax, UIConstants::SimSizeSliderInterval);
+  //_widthSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+  //_widthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
+  //_widthSlider.setValue(UIConstants::SimWidthMax, juce::NotificationType::dontSendNotification);
+  //
+  //_heightSlider.setRange(UIConstants::SimHeightMin, UIConstants::SimHeightMax, UIConstants::SimSizeSliderInterval);
+  //_heightSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+  //_heightSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
+  //_heightSlider.setValue(UIConstants::SimHeightMax, juce::NotificationType::dontSendNotification);
 
   _caVariantDropdown.addItem(UIConstants::CA_Conway, 1);
   _caVariantDropdown.addItem(UIConstants::CA_HighLife, 2);
@@ -91,6 +93,6 @@ void ControlPanelComponent::InitializeControls()
   addAndMakeVisible(_playPauseButton);
   addAndMakeVisible(_randomizeButton);
   addAndMakeVisible(_nextGenerationButton);
-  addAndMakeVisible(_widthSlider);
-  addAndMakeVisible(_heightSlider);
+  //addAndMakeVisible(_widthSlider);
+  //addAndMakeVisible(_heightSlider);
 }

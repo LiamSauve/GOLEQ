@@ -6,10 +6,8 @@ GOLEQAudioProcessorEditor::GOLEQAudioProcessorEditor(GOLEQAudioProcessor& p)
   : AudioProcessorEditor(&p), audioProcessor(p)
 {
   setSize(UIConstants::WindowWidth, UIConstants::WindowHeight);
-
   addAndMakeVisible(_lifeGridComponent);
   addAndMakeVisible(_controlPanelComponent);
-
   AttachListeners();
 
   _lifeGridComponent.setBounds(getLocalBounds());

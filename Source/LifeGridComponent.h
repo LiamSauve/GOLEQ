@@ -11,15 +11,16 @@ public:
   void timerCallback() override;
 
   void toggleplayPause();
-  void setCellSize(int width, int height);
+  void setCellPaintSize(int width, int height);
   void setGridSize(int width, int height);
 
   void mouseDown(const juce::MouseEvent& event);
   void mouseDrag(const juce::MouseEvent& event);
   void mouseUp(const juce::MouseEvent& event);
+  juce::Point<int> GetGridCoordsFromMouse(const juce::MouseEvent& event);
 
 private:
-  LifeGrid _grid;
+  LifeGrid _life;
   bool _isPlaying = true;
   juce::Point<float> _cellPaintSize;
   bool _isDragging = false;

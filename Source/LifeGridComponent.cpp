@@ -2,10 +2,11 @@
 #include "UIConstants.h"
 
 LifeGridComponent::LifeGridComponent() :
-  _grid(UIConstants::SimWidthMin, UIConstants::SimHeightMin)
+  _life(UIConstants::SimWidthMax, UIConstants::SimHeightMax)
 {
-  _grid.Randomize();
-  setCellSize(_grid.GetWidth(), _grid.GetHeight());
+  _life.Randomize();
+  //setCellSize(_grid.GetWidth(), _grid.GetHeight());
+  setCellPaintSize(UIConstants::CellPaintSize, UIConstants::CellPaintSize);
   startTimerHz(10); // 10 times per second for now
 }
 
@@ -13,26 +14,26 @@ void LifeGridComponent::paint(juce::Graphics& g)
 {
   g.fillAll(juce::Colours::black);
 
-  const float gridPixelWidth = _grid.GetWidth() * _cellPaintSize.x;
-  const float gridPixelHeight = _grid.GetHeight() * _cellPaintSize.y;
+  // Red boundary anchored to local bounds
+  juce::Rectangle<float> bounds = getLocalBounds().toFloat();
 
-  // Use SimWidthMax and SimHeightMax for consistent centering
-  const float offsetX = (UIConstants::SimWidthMax - gridPixelWidth) / 2.0f;
-  const float offsetY = (UIConstants::SimHeightMax - gridPixelHeight) / 2.0f;
+  // Optional: calculate offset inside redBounds for padding or centering
+  const float originX = bounds.getX();
+  const float originY = bounds.getY();
+  const juce::Colour deadColour = juce::Colours::darkgrey.withAlpha(0.2f);
 
-  for (int y = 0; y < _grid.GetHeight(); ++y)
+  for (int y = 0; y < _life.GetHeight(); ++y)
   {
-    for (int x = 0; x < _grid.GetWidth(); ++x)
+    for (int x = 0; x < _life.GetWidth(); ++x)
     {
-      if (_grid.GetCell(x, y) == 1)
-      {
-        g.setColour(juce::Colours::green);
+      const float left = originX + x * _cellPaintSize.x;
+      const float top = originY + y * _cellPaintSize.y;
 
-        g.fillRect(offsetX + x * _cellPaintSize.x,
-          offsetY + y * _cellPaintSize.y,
-          _cellPaintSize.x,
-          _cellPaintSize.y);
-      }
+      const juce::Rectangle<float> cellRect(left, top, _cellPaintSize.x, _cellPaintSize.y);
+
+      const bool alive = (_life.GetCell(x, y) == 1);
+      g.setColour(alive ? juce::Colours::green : deadColour);
+      g.fillRect(cellRect);
     }
   }
 }
@@ -46,7 +47,7 @@ void LifeGridComponent::timerCallback()
 {
   if(_isPlaying)
   {
-    _grid.Update();
+    _life.Update();
   }
   repaint();
 }
@@ -56,33 +57,31 @@ void LifeGridComponent::toggleplayPause()
   _isPlaying = !_isPlaying;
 }
 
-void LifeGridComponent::setCellSize(int width, int height)
+void LifeGridComponent::setCellPaintSize(int width, int height)
 {
-  _cellPaintSize.x = static_cast<float>(UIConstants::SimWidthMax) / static_cast<float>(width);
-  _cellPaintSize.y = static_cast<float>(UIConstants::SimHeightMax) / static_cast<float>(height);
+  //_cellPaintSize.x = static_cast<float>(UIConstants::SimWidthMax) / static_cast<float>(width);
+  //_cellPaintSize.y = static_cast<float>(UIConstants::SimHeightMax) / static_cast<float>(height);
 
-  DBG("x:" << _cellPaintSize.x);
-  DBG("y:" << _cellPaintSize.y);
+  _cellPaintSize.x = width;
+  _cellPaintSize.y = height;
 }
 
 void LifeGridComponent::setGridSize(int width, int height)
 {
-  _grid.SetSize(width, height);
-  setCellSize(width, height);
+  _life.SetSize(width, height);
+  //setCellPaintSize(width, height);
 }
 
 void LifeGridComponent::mouseDown(const juce::MouseEvent& event)
 {
-  const int clampedMouseX = std::clamp(event.x, 0, UIConstants::SimWidthMax-1);
-  const int clampedMouseY = std::clamp(event.y, 0, UIConstants::SimHeightMax-1);
-  const int gridX = clampedMouseX / static_cast<int>(_cellPaintSize.x);
-  const int gridY = clampedMouseY / static_cast<int>(_cellPaintSize.y);
+  const auto [gridX, gridY] = GetGridCoordsFromMouse(event);
 
-  _dragModeErase = _grid.GetCell(gridX, gridY) == 1;
+  _dragModeErase = _life.GetCell(gridX, gridY) == 1;
   _isDragging = true;
 
-  _grid.ToggleCell(gridX, gridY);
+  _life.ToggleCell(gridX, gridY);
   repaint();
+
 }
 
 void LifeGridComponent::mouseDrag(const juce::MouseEvent& event)
@@ -92,17 +91,25 @@ void LifeGridComponent::mouseDrag(const juce::MouseEvent& event)
     return;
   }
 
-  const int clampedMouseX = std::clamp(event.x, 0, UIConstants::SimWidthMax-1);
-  const int clampedMouseY = std::clamp(event.y, 0, UIConstants::SimHeightMax-1);
+  const auto [gridX, gridY] = GetGridCoordsFromMouse(event);
 
-  const int gridX = static_cast<int>(clampedMouseX / _cellPaintSize.x);
-  const int gridY = static_cast<int>(clampedMouseY / _cellPaintSize.y);
-
-  _grid.ToggleCell(gridX, gridY);
+  _life.ToggleCell(gridX, gridY);
   repaint();
+
 }
 
 void LifeGridComponent::mouseUp(const juce::MouseEvent&)
 {
   _isDragging = false;
+}
+
+juce::Point<int> LifeGridComponent::GetGridCoordsFromMouse(const juce::MouseEvent& event)
+{
+  const int clampedX = std::clamp(event.x, 0, static_cast<int>(UIConstants::SimWidthMax * _cellPaintSize.x) - 1);
+  const int clampedY = std::clamp(event.y, 0, static_cast<int>(UIConstants::SimHeightMax * _cellPaintSize.y) - 1);
+
+  return {
+      static_cast<int>(clampedX / _cellPaintSize.x),
+      static_cast<int>(clampedY / _cellPaintSize.y)
+  };
 }
