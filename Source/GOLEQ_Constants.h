@@ -1,6 +1,6 @@
 #pragma once
 
-namespace UIConstants
+namespace GOLEQ_Constants
 {
   // Window Dimensions
   static constexpr int WindowWidth = 1280;
@@ -14,14 +14,14 @@ namespace UIConstants
   static constexpr auto NextGenerationLabel = "Next Generation";
 
   // Control Panel: Cellular Automaton Variants
-  static constexpr auto CA_Conway = "Conway's Life";
-  static constexpr auto CA_HighLife = "HighLife";
-  static constexpr auto CA_Seeds = "Seeds";
+  static constexpr auto CA_Conway_Label = "Conway's Life";
+  static constexpr auto CA_HighLife_Label = "HighLife";
+  static constexpr auto CA_Seeds_Label = "Seeds";
 
   // Control Panel: Audio Effect Labels
-  static constexpr auto Effect_EQ = "EQ Sweep";
-  static constexpr auto Effect_Bitcrusher = "Bitcrusher";
-  static constexpr auto Effect_Reverb = "Reverb Warp";
+  static constexpr auto Effect_EQ_Label = "EQ Sweep";
+  static constexpr auto Effect_Bitcrusher_Label = "Bitcrusher";
+  static constexpr auto Effect_Reverb_Label = "Reverb Warp";
 
   // Control Panel: Time Slider Configuration
   static constexpr double TimeSliderMin = 0.016;
@@ -46,4 +46,20 @@ namespace UIConstants
   static constexpr int TextBoxWidth = 60;
   static constexpr int TextBoxHeight = 20;
   static const juce::Colour ControlPanelBackground{ 35, 35, 45 };
+
+  enum CAVariant
+  {
+    Conway = 1,
+    HighLife,
+    Seeds
+  };
+
+
+  enum EffectType
+  {
+    EQ = 1,
+    Bitcrusher,
+    Reverb
+  };
+
 }
