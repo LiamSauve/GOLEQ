@@ -84,10 +84,6 @@ void ControlPanelComponent::InitializeControls()
   //_heightSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
   //_heightSlider.setValue(UIConstants::SimHeightMax, juce::NotificationType::dontSendNotification);
 
-  //_caVariantDropdown.addItem(GOLEQ_Constants::CA_Conway_Label, 1);
-  //_caVariantDropdown.addItem(GOLEQ_Constants::CA_HighLife_Label, 2);
-  //_caVariantDropdown.addItem(GOLEQ_Constants::CA_Seeds_Label, 3);
-
   _caVariantDropdown.addItem(GOLEQ_Constants::CA_Conway_Label, GOLEQ_Constants::CAVariant::Conway);
   _caVariantDropdown.addItem(GOLEQ_Constants::CA_HighLife_Label, GOLEQ_Constants::CAVariant::HighLife);
   _caVariantDropdown.addItem(GOLEQ_Constants::CA_Seeds_Label, GOLEQ_Constants::CAVariant::Seeds);
