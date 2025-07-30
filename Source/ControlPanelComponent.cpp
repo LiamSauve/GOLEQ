@@ -1,5 +1,5 @@
 #include "ControlPanelComponent.h"
-#include "UIConstants.h"
+#include "GOLEQ_Constants.h"
 
 ControlPanelComponent::ControlPanelComponent()
 {
