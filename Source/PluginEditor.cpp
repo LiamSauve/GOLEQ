@@ -19,7 +19,7 @@ GOLEQAudioProcessorEditor::~GOLEQAudioProcessorEditor()
 
 void GOLEQAudioProcessorEditor::ResizeGrid(int newWidth, int newHeight)
 {
-  _lifeGridComponent.setGridSize(newWidth, newHeight);
+  _lifeGridComponent.SetGridSize(newWidth, newHeight);
 }
 
 void GOLEQAudioProcessorEditor::paint(juce::Graphics& g)
@@ -59,7 +59,17 @@ void GOLEQAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
   if (button == &_controlPanelComponent.GetPlayPauseButton())
   {
-    _lifeGridComponent.toggleplayPause();
+    _lifeGridComponent.TogglePlayPause();
+  }
+
+  if (button == &_controlPanelComponent.GetRandomizeButton())
+  {
+    _lifeGridComponent.Randomize();
+  }
+  
+  if (button == &_controlPanelComponent.GetNextGenerationButton())
+  {
+    _lifeGridComponent.NextGeneration();
   }
 }
 
@@ -68,4 +78,6 @@ void GOLEQAudioProcessorEditor::AttachListeners()
   _controlPanelComponent.GetWidthSlider().addListener(this);
   _controlPanelComponent.GetHeightSlider().addListener(this);
   _controlPanelComponent.GetPlayPauseButton().addListener(this);
+  _controlPanelComponent.GetRandomizeButton().addListener(this);
+  _controlPanelComponent.GetNextGenerationButton().addListener(this);
 }

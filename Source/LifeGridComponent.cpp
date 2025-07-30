@@ -6,7 +6,7 @@ LifeGridComponent::LifeGridComponent() :
 {
   _life.Randomize();
   //setCellSize(_grid.GetWidth(), _grid.GetHeight());
-  setCellPaintSize(UIConstants::CellPaintSize, UIConstants::CellPaintSize);
+  SetCellPaintSize(UIConstants::CellPaintSize, UIConstants::CellPaintSize);
   startTimerHz(10); // 10 times per second for now
 }
 
@@ -14,10 +14,8 @@ void LifeGridComponent::paint(juce::Graphics& g)
 {
   g.fillAll(juce::Colours::black);
 
-  // Red boundary anchored to local bounds
   juce::Rectangle<float> bounds = getLocalBounds().toFloat();
 
-  // Optional: calculate offset inside redBounds for padding or centering
   const float originX = bounds.getX();
   const float originY = bounds.getY();
   const juce::Colour deadColour = juce::Colours::darkgrey.withAlpha(0.2f);
@@ -52,24 +50,36 @@ void LifeGridComponent::timerCallback()
   repaint();
 }
 
-void LifeGridComponent::toggleplayPause()
+void LifeGridComponent::TogglePlayPause()
 {
   _isPlaying = !_isPlaying;
 }
 
-void LifeGridComponent::setCellPaintSize(int width, int height)
+void LifeGridComponent::SetCellPaintSize(int width, int height)
 {
   //_cellPaintSize.x = static_cast<float>(UIConstants::SimWidthMax) / static_cast<float>(width);
   //_cellPaintSize.y = static_cast<float>(UIConstants::SimHeightMax) / static_cast<float>(height);
 
-  _cellPaintSize.x = width;
-  _cellPaintSize.y = height;
+  _cellPaintSize.x = static_cast<float>(width);
+  _cellPaintSize.y = static_cast<float>(height);
 }
 
-void LifeGridComponent::setGridSize(int width, int height)
+void LifeGridComponent::SetGridSize(int width, int height)
 {
   _life.SetSize(width, height);
   //setCellPaintSize(width, height);
+}
+
+void LifeGridComponent::Randomize()
+{
+  _life.Randomize();
+  repaint();
+}
+
+void LifeGridComponent::NextGeneration()
+{
+  _life.Update();
+  repaint();
 }
 
 void LifeGridComponent::mouseDown(const juce::MouseEvent& event)

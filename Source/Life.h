@@ -2,10 +2,10 @@
 #include <vector>
 #include <juce_core/juce_core.h>
 
-class LifeGrid
+class Life
 {
 public:
-  LifeGrid(int width, int height);
+  Life(int width, int height);
 
   void Randomize();
   void Update();

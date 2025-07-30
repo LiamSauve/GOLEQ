@@ -1,6 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
-#include "LifeGrid.h"
+#include "Life.h"
 
 class LifeGridComponent : public juce::Component, public juce::Timer
 {
@@ -10,9 +10,11 @@ public:
   void resized() override;
   void timerCallback() override;
 
-  void toggleplayPause();
-  void setCellPaintSize(int width, int height);
-  void setGridSize(int width, int height);
+  void TogglePlayPause();
+  void SetCellPaintSize(int width, int height);
+  void SetGridSize(int width, int height);
+  void Randomize();
+  void NextGeneration();
 
   void mouseDown(const juce::MouseEvent& event);
   void mouseDrag(const juce::MouseEvent& event);
@@ -20,8 +22,8 @@ public:
   juce::Point<int> GetGridCoordsFromMouse(const juce::MouseEvent& event);
 
 private:
-  LifeGrid _life;
-  bool _isPlaying = true;
+  Life _life;
+  bool _isPlaying = false;
   juce::Point<float> _cellPaintSize;
   bool _isDragging = false;
   bool _dragModeErase = false;

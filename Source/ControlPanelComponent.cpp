@@ -11,6 +11,16 @@ juce::TextButton& ControlPanelComponent::GetPlayPauseButton()
   return _playPauseButton;
 }
 
+juce::TextButton& ControlPanelComponent::GetRandomizeButton()
+{
+  return _randomizeButton;
+}
+
+juce::TextButton& ControlPanelComponent::GetNextGenerationButton()
+{
+  return _nextGenerationButton;
+}
+
 juce::Slider& ControlPanelComponent::GetWidthSlider()
 {
   return _widthSlider;

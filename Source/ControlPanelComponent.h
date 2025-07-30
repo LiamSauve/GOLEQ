@@ -8,6 +8,8 @@ public:
   ControlPanelComponent();
 
   juce::TextButton& GetPlayPauseButton();
+  juce::TextButton& GetRandomizeButton();
+  juce::TextButton& GetNextGenerationButton();
   juce::Slider& GetWidthSlider();
   juce::Slider& GetHeightSlider();
 

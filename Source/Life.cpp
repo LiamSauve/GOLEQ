@@ -1,6 +1,6 @@
-#include "LifeGrid.h"
+#include "Life.h"
 
-LifeGrid::LifeGrid(int width, int height)
+Life::Life(int width, int height)
   : _gridWidth(width),
   _gridHeight(height),
   _currentGen(width, std::vector<int>(height, 0)),
@@ -8,7 +8,7 @@ LifeGrid::LifeGrid(int width, int height)
 {
 }
 
-void LifeGrid::Randomize()
+void Life::Randomize()
 {
   for (int x = 0; x < _gridWidth; ++x)
   {
@@ -19,7 +19,7 @@ void LifeGrid::Randomize()
   }
 }
 
-void LifeGrid::Update()
+void Life::Update()
 {
   // Conway's rules:
   // If alive:
@@ -41,27 +41,27 @@ void LifeGrid::Update()
   std::swap(_currentGen, _nextGen);
 }
 
-void LifeGrid::ToggleCell(int x, int y)
+void Life::ToggleCell(int x, int y)
 {
   _currentGen[x][y] = (_currentGen[x][y] == 0) ? 1 : 0;
 }
 
-int LifeGrid::GetCell(int x, int y) const
+int Life::GetCell(int x, int y) const
 {
   return _currentGen[x][y];
 }
 
-int LifeGrid::GetWidth() const
+int Life::GetWidth() const
 {
   return _gridWidth;
 }
 
-int LifeGrid::GetHeight() const
+int Life::GetHeight() const
 {
   return _gridHeight;
 }
 
-void LifeGrid::SetSize(int newWidth, int newHeight)
+void Life::SetSize(int newWidth, int newHeight)
 {
   const int widthDiff = newWidth - _gridWidth;
   const int heightDiff = newHeight - _gridHeight;
@@ -133,7 +133,7 @@ void LifeGrid::SetSize(int newWidth, int newHeight)
   _gridHeight = newHeight;
 }
 
-int LifeGrid::CountLiveNeighbours(int x, int y) const
+int Life::CountLiveNeighbours(int x, int y) const
 {
   int liveCount = 0;
 
