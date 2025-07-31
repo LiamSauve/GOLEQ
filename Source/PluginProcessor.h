@@ -40,7 +40,14 @@ public:
     void SetLifeInterface(const ILife* iLifePtr);
 
 private:
+  void ApplyEffect(juce::AudioBuffer<float>& buffer);
   const ILife* _life = nullptr; // Read-only, non-owning
+  
+  //std::vector<float> _leftDelayBuffer;
+  //std::vector<float> _rightDelayBuffer;
+  //
+  //int _leftWriteIndex = 0;
+  //int _rightWriteIndex = 0;
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GOLEQAudioProcessor)
