@@ -123,23 +123,26 @@ void Life::GenerateCornerBias()
 
 void Life::GenerateRingFormations()
 {
-  int cx = _gridWidth / 2;
-  int cy = _gridHeight / 2;
-  int radius = std::min(_gridWidth, _gridHeight) / 4;
+  // Random center within grid bounds
+  int cx = juce::Random::getSystemRandom().nextInt({ 0, _gridWidth });
+  int cy = juce::Random::getSystemRandom().nextInt({ 0, _gridHeight });
+
+  // Random radius between 1/4 and ~45% of the smaller grid dimension
+  int minRadius = std::min(_gridWidth, _gridHeight) / 4;
+  int maxRadius = static_cast<int>(std::min(_gridWidth, _gridHeight) * 0.45f);
+  int radius = juce::Random::getSystemRandom().nextInt({ minRadius, maxRadius + 1 });
 
   for (int angle = 0; angle < 360; angle += 10)
   {
     float rad = angle * 3.14159f / 180.0f;
-    int x = cx + static_cast<int>(radius * cos(rad));
-    int y = cy + static_cast<int>(radius * sin(rad));
+    int x = cx + static_cast<int>(radius * std::cos(rad));
+    int y = cy + static_cast<int>(radius * std::sin(rad));
 
-    // Seed the original ring cell
     if (IsInBounds(x, y))
     {
       _currentGen[x][y] = 1;
     }
 
-    // Add cells at distance 2 from the ring cell (not adjacent)
     for (int dx = -2; dx <= 2; dx += 2)
     {
       for (int dy = -2; dy <= 2; dy += 2)
