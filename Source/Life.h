@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
 #include <juce_core/juce_core.h>
+#include "ILife.h"
 #include "Constants.h"
 
-class Life
+class Life : ILife
 {
 public:
   Life(int width, int height);
