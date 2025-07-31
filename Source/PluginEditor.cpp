@@ -87,13 +87,13 @@ void GOLEQAudioProcessorEditor::comboBoxChanged(juce::ComboBox* comboBox)
   int value = comboBox->getSelectedId();
   if (comboBox == &_controlPanelComponent.GetCAVariantDropdown())
   {
-    _lifeGridComponent.SetCAVariant(static_cast<Constants::CAVariant>(value));
+    _lifeGridComponent.SetCAVariant(static_cast<CAVariant>(value));
     return;
   }
 
   if (comboBox == &_controlPanelComponent.GetEffectTypeDropdown())
   {
-    _lifeGridComponent.SetEffectType(static_cast<Constants::EffectType>(value));
+    _lifeGridComponent.SetEffectType(static_cast<EffectType>(value));
     return;
   }
 }

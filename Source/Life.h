@@ -25,7 +25,7 @@ public:
   int GetWidth() const;
   int GetHeight() const;
   void SetSize(int newWidth, int newHeight);
-  void SetCAVariant(Constants::CAVariant caVariant);
+  void SetCAVariant(CAVariant caVariant);
 
 private:
   int CountLiveNeighbours(int x, int y) const;
@@ -36,5 +36,5 @@ private:
   int _gridHeight;
   std::vector<std::vector<int>> _currentGen;
   std::vector<std::vector<int>> _nextGen;
-  Constants::CAVariant _caVariant;
+  CAVariant _caVariant;
 };

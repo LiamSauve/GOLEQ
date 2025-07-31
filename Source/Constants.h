@@ -49,17 +49,18 @@ namespace Constants
   static constexpr int TextBoxHeight = 20;
   static const juce::Colour ControlPanelBackground{ 35, 35, 45 };
 
-  enum CAVariant
-  {
-    Conway = 1,
-    HighLife,
-    Seeds
-  };
-
-  enum EffectType
-  {
-    EQ = 1,
-    Bitcrusher,
-    Reverb
-  };
 }
+
+enum CAVariant
+{
+  Conway = 1,
+  HighLife,
+  Seeds
+};
+
+enum EffectType
+{
+  EQ = 1,
+  Bitcrusher,
+  Reverb
+};

@@ -100,15 +100,15 @@ void ControlPanelComponent::InitializeControls()
   //_heightSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
   //_heightSlider.setValue(UIConstants::SimHeightMax, juce::NotificationType::dontSendNotification);
 
-  _caVariantDropdown.addItem(Constants::CA_Conway_Label, Constants::CAVariant::Conway);
-  _caVariantDropdown.addItem(Constants::CA_HighLife_Label, Constants::CAVariant::HighLife);
-  _caVariantDropdown.addItem(Constants::CA_Seeds_Label, Constants::CAVariant::Seeds);
-  _caVariantDropdown.setSelectedId(Constants::CAVariant::Conway);
+  _caVariantDropdown.addItem(Constants::CA_Conway_Label, CAVariant::Conway);
+  _caVariantDropdown.addItem(Constants::CA_HighLife_Label, CAVariant::HighLife);
+  _caVariantDropdown.addItem(Constants::CA_Seeds_Label, CAVariant::Seeds);
+  _caVariantDropdown.setSelectedId(CAVariant::Conway);
 
-  _effectDropdown.addItem(Constants::Effect_EQ_Label, Constants::EffectType::EQ);
-  _effectDropdown.addItem(Constants::Effect_Bitcrusher_Label, Constants::EffectType::Bitcrusher);
-  _effectDropdown.addItem(Constants::Effect_Reverb_Label, Constants::EffectType::Reverb);
-  _effectDropdown.setSelectedId(Constants::EffectType::EQ);
+  _effectDropdown.addItem(Constants::Effect_EQ_Label, EffectType::EQ);
+  _effectDropdown.addItem(Constants::Effect_Bitcrusher_Label, EffectType::Bitcrusher);
+  _effectDropdown.addItem(Constants::Effect_Reverb_Label, EffectType::Reverb);
+  _effectDropdown.setSelectedId(EffectType::EQ);
 
   _playPauseButton.setButtonText(Constants::PlayPauseLabel);
   _randomizeButton.setButtonText(Constants::RandomizeLabel);

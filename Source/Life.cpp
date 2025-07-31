@@ -6,7 +6,7 @@ Life::Life(int width, int height)
   _gridHeight(height),
   _currentGen(width, std::vector<int>(height, 0)),
   _nextGen(width, std::vector<int>(height, 0)),
-  _caVariant(Constants::CAVariant::Conway)
+  _caVariant(CAVariant::Conway)
 {
 }
 
@@ -159,13 +159,13 @@ void Life::Update()
 {
   switch (_caVariant)
   {
-  case Constants::Conway:
+  case CAVariant::Conway:
     Update_Conway();
     break;
-  case Constants::HighLife:
+  case CAVariant::HighLife:
     Update_Highlife();
     break;
-  case Constants::Seeds:
+  case CAVariant::Seeds:
     Update_Seeds();
     break;
   default:
@@ -226,16 +226,44 @@ void Life::Update_Seeds()
   //   - Comes to life with exactly 2 live neighbours
   // All live cells die every generation
 
-  for (int x = 0; x < _gridWidth; ++x)
-  {
-    for (int y = 0; y < _gridHeight; ++y)
-    {
-      const int liveNeighbours = CountLiveNeighbours(x, y);
+  //for (int x = 0; x < _gridWidth; ++x)
+  //{
+  //  for (int y = 0; y < _gridHeight; ++y)
+  //  {
+  //    const int liveNeighbours = CountLiveNeighbours(x, y);
+  //
+  //    _nextGen[x][y] = (_currentGen[x][y] == 0 && liveNeighbours == 2) ? 1 : 0;
+  //  }
+  //}
+  //std::swap(_currentGen, _nextGen);
 
-      _nextGen[x][y] = (_currentGen[x][y] == 0 && liveNeighbours == 2) ? 1 : 0;
+  std::vector<int> currentRow(_gridWidth, 0);
+  std::vector<int> nextRow(_gridWidth, 0);
+
+  // Seed a single active cell
+  currentRow[_gridWidth / 2] = 1;
+
+  for (int y = 0; y < _gridHeight; ++y)
+  {
+    for (int x = 0; x < _gridWidth; ++x)
+    {
+      if (currentRow[x]) _currentGen[x][y] = 1;
+
+      int left = (x == 0) ? 0 : currentRow[x - 1];
+      int center = currentRow[x];
+      int right = (x == _gridWidth - 1) ? 0 : currentRow[x + 1];
+
+      int next = 0;
+      if (left == 1 && center == 1 && right == 0) next = 1;
+      else if (left == 1 && center == 0 && right == 1) next = 1;
+      else if (left == 0 && center == 1 && right == 1) next = 1;
+      else if (left == 0 && center == 1 && right == 0) next = 1;
+      else if (left == 0 && center == 0 && right == 1) next = 1;
+
+      nextRow[x] = next;
     }
+    currentRow = nextRow;
   }
-  std::swap(_currentGen, _nextGen);
 }
 
 void Life::ToggleCell(int x, int y)
@@ -330,9 +358,8 @@ void Life::SetSize(int newWidth, int newHeight)
   _gridHeight = newHeight;
 }
 
-void Life::SetCAVariant(Constants::CAVariant caVariant)
+void Life::SetCAVariant(CAVariant caVariant)
 {
-  DBG("YO");
   _caVariant = caVariant;
 }
 

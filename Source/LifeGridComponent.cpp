@@ -88,12 +88,12 @@ void LifeGridComponent::NextGeneration()
   repaint();
 }
 
-void LifeGridComponent::SetCAVariant(Constants::CAVariant variant)
+void LifeGridComponent::SetCAVariant(CAVariant variant)
 {
   _life.SetCAVariant(variant);
 }
 
-void LifeGridComponent::SetEffectType(Constants::EffectType effectType)
+void LifeGridComponent::SetEffectType(EffectType effectType)
 {
   // send this to the processor
 }

@@ -16,8 +16,8 @@ public:
   void Randomize();
   void RandomizeMeaningfully();
   void NextGeneration();
-  void SetCAVariant(Constants::CAVariant variant);
-  void SetEffectType(Constants::EffectType effectType);
+  void SetCAVariant(CAVariant variant);
+  void SetEffectType(EffectType effectType);
 
   void mouseDown(const juce::MouseEvent& event);
   void mouseDrag(const juce::MouseEvent& event);
