@@ -16,6 +16,11 @@ juce::TextButton& ControlPanelComponent::GetRandomizeButton()
   return _randomizeButton;
 }
 
+juce::TextButton& ControlPanelComponent::GetRandomizeMeaningfullyButton()
+{
+  return _randomizeMeaningfullyButton;
+}
+
 juce::TextButton& ControlPanelComponent::GetNextGenerationButton()
 {
   return _nextGenerationButton;
@@ -68,9 +73,10 @@ void ControlPanelComponent::resized()
   topRow.items.add(juce::FlexItem(_playPauseButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
 
   bottomRow.items.add(juce::FlexItem(_randomizeButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
+  bottomRow.items.add(juce::FlexItem(_randomizeMeaningfullyButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
   bottomRow.items.add(juce::FlexItem(_nextGenerationButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
-  bottomRow.items.add(juce::FlexItem(_widthSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
-  bottomRow.items.add(juce::FlexItem(_heightSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
+  //bottomRow.items.add(juce::FlexItem(_widthSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
+  //bottomRow.items.add(juce::FlexItem(_heightSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
 
   topRow.performLayout(topArea);
   bottomRow.performLayout(bottomArea);
@@ -106,6 +112,7 @@ void ControlPanelComponent::InitializeControls()
 
   _playPauseButton.setButtonText(Constants::PlayPauseLabel);
   _randomizeButton.setButtonText(Constants::RandomizeLabel);
+  _randomizeMeaningfullyButton.setButtonText(Constants::RandomizeMeaningfullyLabel);
   _nextGenerationButton.setButtonText(Constants::NextGenerationLabel);
 
   addAndMakeVisible(_tempoToggle);
@@ -114,6 +121,7 @@ void ControlPanelComponent::InitializeControls()
   addAndMakeVisible(_effectDropdown);
   addAndMakeVisible(_playPauseButton);
   addAndMakeVisible(_randomizeButton);
+  addAndMakeVisible(_randomizeMeaningfullyButton);
   addAndMakeVisible(_nextGenerationButton);
   //addAndMakeVisible(_widthSlider);
   //addAndMakeVisible(_heightSlider);

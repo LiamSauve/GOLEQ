@@ -8,7 +8,14 @@ class Life
 public:
   Life(int width, int height);
 
+  void KillAll();
   void Randomize();
+  void RandomizeMeaningfully();
+  void GenerateClusterBlobs();
+  void GenerateDiagonalBands();
+  void GenerateGliderSeeds();
+  void GenerateCornerBias();
+  void GenerateRingFormations();
   void Update();
   void Update_Conway();
   void Update_Highlife();
@@ -22,6 +29,7 @@ public:
 
 private:
   int CountLiveNeighbours(int x, int y) const;
+  bool IsInBounds(int x, int y);
 
   static constexpr int kMaxCellStateExclusive = 2;
   int _gridWidth;

@@ -11,6 +11,7 @@ namespace Constants
   // Control Panel: Button & Toggle Labels
   static constexpr auto PlayPauseLabel = "Play / Pause";
   static constexpr auto RandomizeLabel = "Randomize";
+  static constexpr auto RandomizeMeaningfullyLabel = "~(*)~";
   static constexpr auto TempoToggleLabel = "Tempo / Time";
   static constexpr auto NextGenerationLabel = "Next Generation";
 

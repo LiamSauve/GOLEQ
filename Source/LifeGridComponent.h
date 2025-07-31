@@ -14,6 +14,7 @@ public:
   void SetCellPaintSize(int width, int height);
   void SetGridSize(int width, int height);
   void Randomize();
+  void RandomizeMeaningfully();
   void NextGeneration();
   void SetCAVariant(Constants::CAVariant variant);
   void SetEffectType(Constants::EffectType effectType);

@@ -9,6 +9,7 @@ public:
 
   juce::TextButton& GetPlayPauseButton();
   juce::TextButton& GetRandomizeButton();
+  juce::TextButton& GetRandomizeMeaningfullyButton();
   juce::TextButton& GetNextGenerationButton();
   juce::ComboBox& GetCAVariantDropdown();
   juce::ComboBox& GetEffectTypeDropdown();
@@ -28,6 +29,7 @@ private:
 
   juce::TextButton _playPauseButton;
   juce::TextButton _randomizeButton;
+  juce::TextButton _randomizeMeaningfullyButton;
   juce::TextButton _nextGenerationButton;
 
   juce::Slider _widthSlider;

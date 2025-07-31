@@ -10,6 +10,17 @@ Life::Life(int width, int height)
 {
 }
 
+void Life::KillAll()
+{
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      _currentGen[x][y] = 0;
+    }
+  }
+}
+
 void Life::Randomize()
 {
   for (int x = 0; x < _gridWidth; ++x)
@@ -17,6 +28,129 @@ void Life::Randomize()
     for (int y = 0; y < _gridHeight; ++y)
     {
       _currentGen[x][y] = juce::Random::getSystemRandom().nextInt(kMaxCellStateExclusive);
+    }
+  }
+}
+
+void Life::RandomizeMeaningfully()
+{
+  KillAll();
+  int numOfPatterns = 5;
+  int pattern = rand() % numOfPatterns;
+
+  switch (pattern)
+  {
+    case 0: GenerateClusterBlobs(); break;
+    case 1: GenerateDiagonalBands(); break;
+    case 2: GenerateGliderSeeds(); break;
+    case 3: GenerateCornerBias(); break;
+    case 4: GenerateRingFormations(); break;
+  }
+}
+
+void Life::GenerateClusterBlobs()
+{
+  for (int i = 0; i < 12; ++i)
+  {
+    int cx = rand() % _gridWidth;
+    int cy = rand() % _gridHeight;
+
+    for (int dx = -2; dx <= 2; ++dx)
+    {
+      for (int dy = -2; dy <= 2; ++dy)
+      {
+        int x = cx + dx;
+        int y = cy + dy;
+        if (IsInBounds(x, y) && rand() % 100 < 40)
+        {
+          _currentGen[x][y] = 1;
+        }
+      }
+    }
+  }
+}
+
+void Life::GenerateDiagonalBands()
+{
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      if ((x + y) % 10 < 3 && rand() % 100 < 50)
+      {
+        _currentGen[x][y] = 1;
+      }
+    }
+  }
+}
+
+void Life::GenerateGliderSeeds()
+{
+  for (int i = 0; i < 8; ++i)
+  {
+    int x = rand() % (_gridWidth - 3);
+    int y = rand() % (_gridHeight - 3);
+
+    // Simple glider pattern
+    _currentGen[x + 1][y] = 1;
+    _currentGen[x + 2][y + 1] = 1;
+    _currentGen[x][y + 2] = 1;
+    _currentGen[x + 1][y + 2] = 1;
+    _currentGen[x + 2][y + 2] = 1;
+  }
+}
+
+void Life::GenerateCornerBias()
+{
+  for (int x = 0; x < _gridWidth / 4; ++x)
+  {
+    for (int y = 0; y < _gridHeight / 4; ++y)
+    {
+      if (rand() % 100 < 60)
+        _currentGen[x][y] = 1; // Top-left bias
+    }
+  }
+
+  for (int x = _gridWidth - _gridWidth / 4; x < _gridWidth; ++x)
+  {
+    for (int y = _gridHeight - _gridHeight / 4; y < _gridHeight; ++y)
+    {
+      if (rand() % 100 < 60)
+        _currentGen[x][y] = 1; // Bottom-right bias
+    }
+  }
+}
+
+void Life::GenerateRingFormations()
+{
+  int cx = _gridWidth / 2;
+  int cy = _gridHeight / 2;
+  int radius = std::min(_gridWidth, _gridHeight) / 4;
+
+  for (int angle = 0; angle < 360; angle += 10)
+  {
+    float rad = angle * 3.14159f / 180.0f;
+    int x = cx + static_cast<int>(radius * cos(rad));
+    int y = cy + static_cast<int>(radius * sin(rad));
+
+    // Seed the original ring cell
+    if (IsInBounds(x, y))
+    {
+      _currentGen[x][y] = 1;
+    }
+
+    // Add cells at distance 2 from the ring cell (not adjacent)
+    for (int dx = -2; dx <= 2; dx += 2)
+    {
+      for (int dy = -2; dy <= 2; dy += 2)
+      {
+        int nx = x + dx;
+        int ny = y + dy;
+        if (IsInBounds(nx, ny))
+        {
+          _currentGen[nx][ny] = 1;
+        }
+      }
     }
   }
 }
@@ -64,12 +198,44 @@ void Life::Update_Conway()
 
 void Life::Update_Highlife()
 {
-  Update_Conway();
+  // HighLife rules:
+  // If alive:
+  //   - Survives with 2 or 3 live neighbours
+  // If dead:
+  //   - Comes to life with 3 or 6 live neighbours
+
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      const int currentCellState = _currentGen[x][y];
+      const int liveNeighbours = CountLiveNeighbours(x, y);
+
+      _nextGen[x][y] = (currentCellState == 1)
+        ? ((liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0)
+        : ((liveNeighbours == 3 || liveNeighbours == 6) ? 1 : 0);
+    }
+  }
+  std::swap(_currentGen, _nextGen);
 }
 
 void Life::Update_Seeds()
 {
-  Update_Conway();
+  // Seeds rules:
+  // If dead:
+  //   - Comes to life with exactly 2 live neighbours
+  // All live cells die every generation
+
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      const int liveNeighbours = CountLiveNeighbours(x, y);
+
+      _nextGen[x][y] = (_currentGen[x][y] == 0 && liveNeighbours == 2) ? 1 : 0;
+    }
+  }
+  std::swap(_currentGen, _nextGen);
 }
 
 void Life::ToggleCell(int x, int y)
@@ -164,6 +330,12 @@ void Life::SetSize(int newWidth, int newHeight)
   _gridHeight = newHeight;
 }
 
+void Life::SetCAVariant(Constants::CAVariant caVariant)
+{
+  DBG("YO");
+  _caVariant = caVariant;
+}
+
 int Life::CountLiveNeighbours(int x, int y) const
 {
   int liveCount = 0;
@@ -189,7 +361,8 @@ int Life::CountLiveNeighbours(int x, int y) const
   return liveCount;
 }
 
-void Life::SetCAVariant(Constants::CAVariant caVariant)
+bool Life::IsInBounds(int x, int y)
 {
-  _caVariant = caVariant;
+  return x >= 0 && x < _gridWidth &&
+         y >= 0 && y < _gridHeight;
 }

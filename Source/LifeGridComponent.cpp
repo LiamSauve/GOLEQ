@@ -76,6 +76,12 @@ void LifeGridComponent::Randomize()
   repaint();
 }
 
+void LifeGridComponent::RandomizeMeaningfully()
+{
+  _life.RandomizeMeaningfully();
+  repaint();
+}
+
 void LifeGridComponent::NextGeneration()
 {
   _life.Update();
@@ -84,12 +90,12 @@ void LifeGridComponent::NextGeneration()
 
 void LifeGridComponent::SetCAVariant(Constants::CAVariant variant)
 {
-  
+  _life.SetCAVariant(variant);
 }
 
 void LifeGridComponent::SetEffectType(Constants::EffectType effectType)
 {
-
+  // send this to the processor
 }
 
 void LifeGridComponent::mouseDown(const juce::MouseEvent& event)
