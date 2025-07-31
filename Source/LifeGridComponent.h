@@ -18,6 +18,7 @@ public:
   void NextGeneration();
   void SetCAVariant(CAVariant variant);
   void SetEffectType(EffectType effectType);
+  const ILife* GetILife() const;
 
   void mouseDown(const juce::MouseEvent& event);
   void mouseDrag(const juce::MouseEvent& event);

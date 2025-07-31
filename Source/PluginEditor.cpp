@@ -5,6 +5,7 @@
 GOLEQAudioProcessorEditor::GOLEQAudioProcessorEditor(GOLEQAudioProcessor& p)
   : AudioProcessorEditor(&p), audioProcessor(p)
 {
+  p.SetLifeInterface(_lifeGridComponent.GetILife());
   setSize(Constants::WindowWidth, Constants::WindowHeight);
   addAndMakeVisible(_lifeGridComponent);
   addAndMakeVisible(_controlPanelComponent);

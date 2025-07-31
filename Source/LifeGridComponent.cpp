@@ -98,6 +98,11 @@ void LifeGridComponent::SetEffectType(EffectType effectType)
   // send this to the processor
 }
 
+const ILife* LifeGridComponent::GetILife() const
+{
+  return &_life;
+}
+
 void LifeGridComponent::mouseDown(const juce::MouseEvent& event)
 {
   const auto [gridX, gridY] = GetGridCoordsFromMouse(event);

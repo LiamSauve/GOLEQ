@@ -4,7 +4,7 @@
 #include "ILife.h"
 #include "Constants.h"
 
-class Life : ILife
+class Life : public ILife
 {
 public:
   Life(int width, int height);
