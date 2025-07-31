@@ -5,7 +5,7 @@
 GOLEQAudioProcessorEditor::GOLEQAudioProcessorEditor(GOLEQAudioProcessor& p)
   : AudioProcessorEditor(&p), audioProcessor(p)
 {
-  setSize(GOLEQ_Constants::WindowWidth, GOLEQ_Constants::WindowHeight);
+  setSize(Constants::WindowWidth, Constants::WindowHeight);
   addAndMakeVisible(_lifeGridComponent);
   addAndMakeVisible(_controlPanelComponent);
   AttachListeners();

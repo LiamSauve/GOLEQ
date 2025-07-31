@@ -6,7 +6,7 @@ Life::Life(int width, int height)
   _gridHeight(height),
   _currentGen(width, std::vector<int>(height, 0)),
   _nextGen(width, std::vector<int>(height, 0)),
-  _caVariant(GOLEQ_Constants::CAVariant::Conway)
+  _caVariant(Constants::CAVariant::Conway)
 {
 }
 
@@ -25,13 +25,13 @@ void Life::Update()
 {
   switch (_caVariant)
   {
-  case GOLEQ_Constants::Conway:
+  case Constants::Conway:
     Update_Conway();
     break;
-  case GOLEQ_Constants::HighLife:
+  case Constants::HighLife:
     Update_Highlife();
     break;
-  case GOLEQ_Constants::Seeds:
+  case Constants::Seeds:
     Update_Seeds();
     break;
   default:
@@ -189,7 +189,7 @@ int Life::CountLiveNeighbours(int x, int y) const
   return liveCount;
 }
 
-void Life::SetCAVariant(GOLEQ_Constants::CAVariant caVariant)
+void Life::SetCAVariant(Constants::CAVariant caVariant)
 {
   _caVariant = caVariant;
 }

@@ -43,12 +43,12 @@ juce::Slider& ControlPanelComponent::GetHeightSlider()
 
 void ControlPanelComponent::paint(juce::Graphics& g)
 {
-  g.fillAll(GOLEQ_Constants::ControlPanelBackground);
+  g.fillAll(Constants::ControlPanelBackground);
 }
 
 void ControlPanelComponent::resized()
 {
-  auto area = getLocalBounds().reduced(GOLEQ_Constants::ComponentPadding);
+  auto area = getLocalBounds().reduced(Constants::ComponentPadding);
   auto topArea = area.removeFromTop(area.getHeight() / 2);
   auto bottomArea = area;
 
@@ -59,18 +59,18 @@ void ControlPanelComponent::resized()
   topRow.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
   bottomRow.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
 
-  const int knobHeight = GOLEQ_Constants::ControlHeight + GOLEQ_Constants::RotarySliderExtraHeight;
+  const int knobHeight = Constants::ControlHeight + Constants::RotarySliderExtraHeight;
 
-  topRow.items.add(juce::FlexItem(_tempoToggle).withMinHeight(GOLEQ_Constants::ControlHeight).withMinWidth(GOLEQ_Constants::ControlMinWidth));
-  topRow.items.add(juce::FlexItem(_timeSlider).withMinHeight(knobHeight).withMinWidth(GOLEQ_Constants::ControlMinWidth));
-  topRow.items.add(juce::FlexItem(_caVariantDropdown).withMinHeight(GOLEQ_Constants::ControlHeight).withMinWidth(GOLEQ_Constants::DropdownWidth));
-  topRow.items.add(juce::FlexItem(_effectDropdown).withMinHeight(GOLEQ_Constants::ControlHeight).withMinWidth(GOLEQ_Constants::DropdownWidth));
-  topRow.items.add(juce::FlexItem(_playPauseButton).withMinHeight(GOLEQ_Constants::ControlHeight).withMinWidth(GOLEQ_Constants::ButtonWidth));
+  topRow.items.add(juce::FlexItem(_tempoToggle).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ControlMinWidth));
+  topRow.items.add(juce::FlexItem(_timeSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
+  topRow.items.add(juce::FlexItem(_caVariantDropdown).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::DropdownWidth));
+  topRow.items.add(juce::FlexItem(_effectDropdown).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::DropdownWidth));
+  topRow.items.add(juce::FlexItem(_playPauseButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
 
-  bottomRow.items.add(juce::FlexItem(_randomizeButton).withMinHeight(GOLEQ_Constants::ControlHeight).withMinWidth(GOLEQ_Constants::ButtonWidth));
-  bottomRow.items.add(juce::FlexItem(_nextGenerationButton).withMinHeight(GOLEQ_Constants::ControlHeight).withMinWidth(GOLEQ_Constants::ButtonWidth));
-  bottomRow.items.add(juce::FlexItem(_widthSlider).withMinHeight(knobHeight).withMinWidth(GOLEQ_Constants::ControlMinWidth));
-  bottomRow.items.add(juce::FlexItem(_heightSlider).withMinHeight(knobHeight).withMinWidth(GOLEQ_Constants::ControlMinWidth));
+  bottomRow.items.add(juce::FlexItem(_randomizeButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
+  bottomRow.items.add(juce::FlexItem(_nextGenerationButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
+  bottomRow.items.add(juce::FlexItem(_widthSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
+  bottomRow.items.add(juce::FlexItem(_heightSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
 
   topRow.performLayout(topArea);
   bottomRow.performLayout(bottomArea);
@@ -78,11 +78,11 @@ void ControlPanelComponent::resized()
 
 void ControlPanelComponent::InitializeControls()
 {
-  _tempoToggle.setButtonText(GOLEQ_Constants::TempoToggleLabel);
+  _tempoToggle.setButtonText(Constants::TempoToggleLabel);
 
-  _timeSlider.setRange(GOLEQ_Constants::TimeSliderMin, GOLEQ_Constants::TimeSliderMax, GOLEQ_Constants::TimeSliderInterval);
+  _timeSlider.setRange(Constants::TimeSliderMin, Constants::TimeSliderMax, Constants::TimeSliderInterval);
   _timeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-  _timeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, GOLEQ_Constants::TextBoxWidth, GOLEQ_Constants::TextBoxHeight);
+  _timeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, Constants::TextBoxWidth, Constants::TextBoxHeight);
 
   //_widthSlider.setRange(UIConstants::SimWidthMin, UIConstants::SimWidthMax, UIConstants::SimSizeSliderInterval);
   //_widthSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
@@ -94,19 +94,19 @@ void ControlPanelComponent::InitializeControls()
   //_heightSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
   //_heightSlider.setValue(UIConstants::SimHeightMax, juce::NotificationType::dontSendNotification);
 
-  _caVariantDropdown.addItem(GOLEQ_Constants::CA_Conway_Label, GOLEQ_Constants::CAVariant::Conway);
-  _caVariantDropdown.addItem(GOLEQ_Constants::CA_HighLife_Label, GOLEQ_Constants::CAVariant::HighLife);
-  _caVariantDropdown.addItem(GOLEQ_Constants::CA_Seeds_Label, GOLEQ_Constants::CAVariant::Seeds);
-  _caVariantDropdown.setSelectedId(GOLEQ_Constants::CAVariant::Conway);
+  _caVariantDropdown.addItem(Constants::CA_Conway_Label, Constants::CAVariant::Conway);
+  _caVariantDropdown.addItem(Constants::CA_HighLife_Label, Constants::CAVariant::HighLife);
+  _caVariantDropdown.addItem(Constants::CA_Seeds_Label, Constants::CAVariant::Seeds);
+  _caVariantDropdown.setSelectedId(Constants::CAVariant::Conway);
 
-  _effectDropdown.addItem(GOLEQ_Constants::Effect_EQ_Label, GOLEQ_Constants::EffectType::EQ);
-  _effectDropdown.addItem(GOLEQ_Constants::Effect_Bitcrusher_Label, GOLEQ_Constants::EffectType::Bitcrusher);
-  _effectDropdown.addItem(GOLEQ_Constants::Effect_Reverb_Label, GOLEQ_Constants::EffectType::Reverb);
-  _effectDropdown.setSelectedId(GOLEQ_Constants::EffectType::EQ);
+  _effectDropdown.addItem(Constants::Effect_EQ_Label, Constants::EffectType::EQ);
+  _effectDropdown.addItem(Constants::Effect_Bitcrusher_Label, Constants::EffectType::Bitcrusher);
+  _effectDropdown.addItem(Constants::Effect_Reverb_Label, Constants::EffectType::Reverb);
+  _effectDropdown.setSelectedId(Constants::EffectType::EQ);
 
-  _playPauseButton.setButtonText(GOLEQ_Constants::PlayPauseLabel);
-  _randomizeButton.setButtonText(GOLEQ_Constants::RandomizeLabel);
-  _nextGenerationButton.setButtonText(GOLEQ_Constants::NextGenerationLabel);
+  _playPauseButton.setButtonText(Constants::PlayPauseLabel);
+  _randomizeButton.setButtonText(Constants::RandomizeLabel);
+  _nextGenerationButton.setButtonText(Constants::NextGenerationLabel);
 
   addAndMakeVisible(_tempoToggle);
   addAndMakeVisible(_timeSlider);

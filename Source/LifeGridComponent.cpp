@@ -2,11 +2,11 @@
 #include "GOLEQ_Constants.h"
 
 LifeGridComponent::LifeGridComponent() :
-  _life(GOLEQ_Constants::SimWidthMax, GOLEQ_Constants::SimHeightMax)
+  _life(Constants::SimWidthMax, Constants::SimHeightMax)
 {
   _life.Randomize();
   //setCellSize(_grid.GetWidth(), _grid.GetHeight());
-  SetCellPaintSize(GOLEQ_Constants::CellPaintSize, GOLEQ_Constants::CellPaintSize);
+  SetCellPaintSize(Constants::CellPaintSize, Constants::CellPaintSize);
   startTimerHz(10); // 10 times per second for now
 }
 
@@ -82,12 +82,12 @@ void LifeGridComponent::NextGeneration()
   repaint();
 }
 
-void LifeGridComponent::SetCAVariant(GOLEQ_Constants::CAVariant variant)
+void LifeGridComponent::SetCAVariant(Constants::CAVariant variant)
 {
   
 }
 
-void LifeGridComponent::SetEffectType(GOLEQ_Constants::EffectType effectType)
+void LifeGridComponent::SetEffectType(Constants::EffectType effectType)
 {
 
 }
@@ -125,8 +125,8 @@ void LifeGridComponent::mouseUp(const juce::MouseEvent&)
 
 juce::Point<int> LifeGridComponent::GetGridCoordsFromMouse(const juce::MouseEvent& event)
 {
-  const int clampedX = std::clamp(event.x, 0, static_cast<int>(GOLEQ_Constants::SimWidthMax * _cellPaintSize.x) - 1);
-  const int clampedY = std::clamp(event.y, 0, static_cast<int>(GOLEQ_Constants::SimHeightMax * _cellPaintSize.y) - 1);
+  const int clampedX = std::clamp(event.x, 0, static_cast<int>(Constants::SimWidthMax * _cellPaintSize.x) - 1);
+  const int clampedY = std::clamp(event.y, 0, static_cast<int>(Constants::SimHeightMax * _cellPaintSize.y) - 1);
 
   return {
       static_cast<int>(clampedX / _cellPaintSize.x),

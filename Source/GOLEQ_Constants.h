@@ -1,7 +1,7 @@
 #pragma once
 #include <JuceHeader.h>
 
-namespace GOLEQ_Constants
+namespace Constants
 {
   // Window Dimensions
   static constexpr int WindowWidth = 1280;
