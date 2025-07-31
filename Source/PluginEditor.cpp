@@ -1,6 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "GOLEQ_Constants.h"
+#include "Constants.h"
 
 GOLEQAudioProcessorEditor::GOLEQAudioProcessorEditor(GOLEQAudioProcessor& p)
   : AudioProcessorEditor(&p), audioProcessor(p)

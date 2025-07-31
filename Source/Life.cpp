@@ -1,5 +1,5 @@
 #include "Life.h"
-#include "GOLEQ_Constants.h"
+#include "Constants.h"
 
 Life::Life(int width, int height)
   : _gridWidth(width),

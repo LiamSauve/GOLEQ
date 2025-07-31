@@ -1,5 +1,5 @@
 #include "LifeGridComponent.h"
-#include "GOLEQ_Constants.h"
+#include "Constants.h"
 
 LifeGridComponent::LifeGridComponent() :
   _life(Constants::SimWidthMax, Constants::SimHeightMax)
