@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "ILife.h"
 
 class GOLEQAudioProcessor  : public juce::AudioProcessor
 {
@@ -35,6 +36,11 @@ public:
 
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+    void SetLifeInterface(const ILife* iLifePtr);
+
+private:
+  const ILife* _life = nullptr; // Read-only, non-owning
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GOLEQAudioProcessor)

@@ -170,6 +170,12 @@ void GOLEQAudioProcessor::setStateInformation (const void* data, int sizeInBytes
     // whose contents will have been created by the getStateInformation() call.
 }
 
+
+void GOLEQAudioProcessor::SetLifeInterface(const ILife* iLifePtr)
+{
+  _life = iLifePtr;
+}
+
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
