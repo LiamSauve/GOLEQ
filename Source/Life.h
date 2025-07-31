@@ -22,6 +22,7 @@ public:
   void Update_Highlife();
   void Update_Seeds();
   void ToggleCell(int x, int y);
+  int GetActiveLiveCellCount() const override;
   int GetCell(int x, int y) const override;
   int GetWidth() const override;
   int GetHeight() const override;

@@ -245,6 +245,23 @@ void Life::ToggleCell(int x, int y)
   _currentGen[x][y] = (_currentGen[x][y] == 0) ? 1 : 0;
 }
 
+int Life::GetActiveLiveCellCount() const
+{
+  int count = 0;
+  for (int x = 0; x < _currentGen.size(); ++x)
+  {
+    for (int y = 0; y < _currentGen[x].size(); ++y)
+    {
+      if (_currentGen[x][y] != 0)
+      {
+        ++count;
+      }
+    }
+  }
+  return count;
+}
+
+
 int Life::GetCell(int x, int y) const
 {
   return _currentGen[x][y];
