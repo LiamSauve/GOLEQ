@@ -8,6 +8,10 @@ namespace Constants
   static constexpr int WindowHeight = 1080;
   static constexpr int SimulationHeight = 720;
 
+  // Simulation constants
+  static constexpr int MinAge = 0;
+  static constexpr int MaxAge = 20;
+
   // Control Panel: Button & Toggle Labels
   static constexpr auto PlayPauseLabel = "Play / Pause";
   static constexpr auto RandomizeLabel = "Randomize";

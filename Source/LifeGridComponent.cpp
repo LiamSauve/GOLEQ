@@ -22,10 +22,6 @@ void LifeGridComponent::paint(juce::Graphics& g)
   const float originY = bounds.getY();
   const juce::Colour deadColour = juce::Colours::transparentBlack;
 
-  // Gradient parameters
-  const int minAge = 0;
-  const int maxAge = 20;
-
   for (int y = 0; y < _life.GetHeight(); ++y)
   {
     for (int x = 0; x < _life.GetWidth(); ++x)
@@ -43,28 +39,24 @@ void LifeGridComponent::paint(juce::Graphics& g)
 
         if (cell.age == -1)
         {
-          // Age not used — default bright green
           cellColour = juce::Colours::green;
         }
         else
         {
           // Normalize age to [0, 1]
-          const float ageRatio = juce::jlimit(0.0f, 1.0f, (float)(cell.age - minAge) / (float)(maxAge - minAge));
+          const float ageRatio = juce::jlimit(0.0f, 1.0f, (float)(cell.age - Constants::MinAge) / (float)(Constants::MaxAge - Constants::MinAge));
 
-          // Define gradient stops
-          juce::Colour startColour = juce::Colours::green;            // bright green
-          juce::Colour midColour = juce::Colours::green.darker(0.6f); // dark green
-          juce::Colour endColour = juce::Colours::red.darker(0.8f);   // dark red
+          juce::Colour startColour = juce::Colours::green;
+          juce::Colour midColour = juce::Colours::green.darker(0.6f);
+          juce::Colour endColour = juce::Colours::brown.darker(0.8f);
 
           if (ageRatio < 0.5f)
           {
-            // Bright green -> dark green
             float t = ageRatio * 2.0f;
             cellColour = startColour.interpolatedWith(midColour, t);
           }
           else
           {
-            // Dark green -> dark red
             float t = (ageRatio - 0.5f) * 2.0f;
             cellColour = midColour.interpolatedWith(endColour, t);
           }
