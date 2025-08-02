@@ -55,7 +55,6 @@ namespace Constants
   static constexpr int TextBoxWidth = 60;
   static constexpr int TextBoxHeight = 20;
   static const juce::Colour ControlPanelBackground{ 35, 35, 45 };
-
 }
 
 enum CAVariant

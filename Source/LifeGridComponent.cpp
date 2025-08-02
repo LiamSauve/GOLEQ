@@ -10,79 +10,78 @@ LifeGridComponent::LifeGridComponent() :
 {
   _life.Randomize();
   
-  _glContext.setRenderer(this);
-  _glContext.attachTo(*this);
-  _glContext.setContinuousRepainting(true);
-
+  //_glContext.setRenderer(this);
+  //_glContext.attachTo(*this);
+  //_glContext.setContinuousRepainting(true);
 
   startTimerHz(10); // 10 times per second for now
 }
 
 LifeGridComponent::~LifeGridComponent()
 {
-  _glContext.detach();
+  //_glContext.detach();
 }
 
 
 void LifeGridComponent::paint(juce::Graphics& g)
 {
-  g.fillAll(juce::Colours::black);
+  //g.fillAll(juce::Colours::black);
 
-  juce::Rectangle<float> bounds = getLocalBounds().toFloat();
-  const float originX = bounds.getX();
-  const float originY = bounds.getY();
-  const juce::Colour deadColour = juce::Colours::transparentBlack;
+  //juce::Rectangle<float> bounds = getLocalBounds().toFloat();
+  //const float originX = bounds.getX();
+  //const float originY = bounds.getY();
+  //const juce::Colour deadColour = juce::Colours::transparentBlack;
 
-  for (int y = 0; y < _life.GetHeight(); ++y)
-  {
-    for (int x = 0; x < _life.GetWidth(); ++x)
-    {
-      const float left = originX + x * _cellPaintSize.x;
-      const float top = originY + y * _cellPaintSize.y;
-      const juce::Rectangle<float> cellRect(left, top, _cellPaintSize.x, _cellPaintSize.y);
+  //for (int y = 0; y < _life.GetHeight(); ++y)
+  //{
+  //  for (int x = 0; x < _life.GetWidth(); ++x)
+  //  {
+  //    const float left = originX + x * _cellPaintSize.x;
+  //    const float top = originY + y * _cellPaintSize.y;
+  //    const juce::Rectangle<float> cellRect(left, top, _cellPaintSize.x, _cellPaintSize.y);
 
-      const Cell cell = _life.GetCell(x, y);
-      const bool alive = (cell.alive == 1);
+  //    const Cell cell = _life.GetCell(x, y);
+  //    const bool alive = (cell.alive == 1);
 
-      if (alive)
-      {
-        juce::Colour cellColour;
+  //    if (alive)
+  //    {
+  //      juce::Colour cellColour;
 
-        if (cell.age == -1)
-        {
-          cellColour = juce::Colours::green;
-        }
-        else
-        {
-          // Normalize age to [0, 1]
-          const float ageRatio = juce::jlimit(0.0f, 1.0f, (float)(cell.age - Constants::MinAge) / (float)(Constants::MaxAge - Constants::MinAge));
+  //      if (cell.age == -1)
+  //      {
+  //        cellColour = juce::Colours::green;
+  //      }
+  //      else
+  //      {
+  //        // Normalize age to [0, 1]
+  //        const float ageRatio = juce::jlimit(0.0f, 1.0f, (float)(cell.age - Constants::MinAge) / (float)(Constants::MaxAge - Constants::MinAge));
 
-          juce::Colour startColour = juce::Colours::green;
-          juce::Colour midColour = juce::Colours::green.darker(0.6f);
-          juce::Colour endColour = juce::Colours::brown.darker(0.8f);
+  //        juce::Colour startColour = juce::Colours::green;
+  //        juce::Colour midColour = juce::Colours::green.darker(0.6f);
+  //        juce::Colour endColour = juce::Colours::brown.darker(0.8f);
 
-          if (ageRatio < 0.5f)
-          {
-            float t = ageRatio * 2.0f;
-            cellColour = startColour.interpolatedWith(midColour, t);
-          }
-          else
-          {
-            float t = (ageRatio - 0.5f) * 2.0f;
-            cellColour = midColour.interpolatedWith(endColour, t);
-          }
-        }
+  //        if (ageRatio < 0.5f)
+  //        {
+  //          float t = ageRatio * 2.0f;
+  //          cellColour = startColour.interpolatedWith(midColour, t);
+  //        }
+  //        else
+  //        {
+  //          float t = (ageRatio - 0.5f) * 2.0f;
+  //          cellColour = midColour.interpolatedWith(endColour, t);
+  //        }
+  //      }
 
-        g.setColour(cellColour);
-      }
-      else
-      {
-        g.setColour(deadColour);
-      }
+  //      g.setColour(cellColour);
+  //    }
+  //    else
+  //    {
+  //      g.setColour(deadColour);
+  //    }
 
-      g.fillRect(cellRect);
-    }
-  }
+  //    g.fillRect(cellRect);
+  //  }
+  //}
 }
 
 void LifeGridComponent::resized()
@@ -99,18 +98,50 @@ void LifeGridComponent::timerCallback()
   repaint();
 }
 
-void LifeGridComponent::newOpenGLContextCreated()
-{
-
-}
-void LifeGridComponent::renderOpenGL()
-{
-
-}
-void LifeGridComponent::openGLContextClosing()
-{
-
-}
+//void LifeGridComponent::newOpenGLContextCreated()
+//{
+//
+//}
+//void LifeGridComponent::renderOpenGL()
+//{
+//  juce::OpenGLHelpers::clear(juce::Colours::black);
+//
+//  const int gridWidth = _life.GetWidth();
+//  const int gridHeight = _life.GetHeight();
+//
+//  float cellWidth = 2.0f / gridWidth;
+//  float cellHeight = 2.0f / gridHeight;
+//
+//  for (int y = 0; y < gridHeight; ++y)
+//  {
+//    for (int x = 0; x < gridWidth; ++x)
+//    {
+//      const Cell& cell = _life.GetCell(x, y);
+//      if (cell.alive)
+//      {
+//        juce::Colour colour = GetAgeColour(cell.age);
+//        
+//        /* BROKEN GL CALLS ARE HERE*/
+//        glColor3f(colour.getFloatRed(), colour.getFloatGreen(), colour.getFloatBlue());
+//
+//        float px = -1.0f + x * cellWidth;
+//        float py = -1.0f + y * cellHeight;
+//
+//        glBegin(GL_QUADS);
+//        glVertex2f(px, py);
+//        glVertex2f(px + cellWidth, py);
+//        glVertex2f(px + cellWidth, py + cellHeight);
+//        glVertex2f(px, py + cellHeight);
+//        glEnd();
+//        /* ARGH*/
+//      }
+//    }
+//  }
+//}
+//void LifeGridComponent::openGLContextClosing()
+//{
+//
+//}
 
 void LifeGridComponent::TogglePlayPause()
 {
@@ -206,3 +237,17 @@ juce::Point<int> LifeGridComponent::GetGridCoordsFromMouse(const juce::MouseEven
       static_cast<int>(clampedY / _cellPaintSize.y)
   };
 }
+
+//juce::Colour LifeGridComponent::GetAgeColour(int age)
+//{
+//  float ratio = juce::jlimit(0.0f, 1.0f, (float)(age - Constants::MinAge) / (float)(Constants::MaxAge - Constants::MinAge));
+//
+//  juce::Colour start = juce::Colours::green;
+//  juce::Colour mid = juce::Colours::green.darker(0.6f);
+//  juce::Colour end = juce::Colours::red.darker(0.8f);
+//
+//  if (ratio < 0.5f)
+//    return start.interpolatedWith(mid, ratio * 2.0f);
+//  else
+//    return mid.interpolatedWith(end, (ratio - 0.5f) * 2.0f);
+//}

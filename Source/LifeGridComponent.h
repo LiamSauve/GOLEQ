@@ -3,8 +3,8 @@
 
 class LifeGridComponent :
   public juce::Component,
-  public juce::Timer,
-  public juce::OpenGLRenderer
+  public juce::Timer
+  /*public juce::OpenGLRenderer*/
 {
 public:
   LifeGridComponent();
@@ -14,9 +14,9 @@ public:
   void timerCallback() override;
 
   // OpenGLRenderer methods
-  void newOpenGLContextCreated() override;
-  void renderOpenGL() override;
-  void openGLContextClosing() override;
+  //void newOpenGLContextCreated() override;
+  //void renderOpenGL() override;
+  //void openGLContextClosing() override;
 
   void TogglePlayPause();
   void SetCellPaintSize(int width, int height);
@@ -39,5 +39,7 @@ private:
   juce::Point<float> _cellPaintSize;
   bool _isDragging;
   bool _dragModeErase;
-  juce::OpenGLContext _glContext;
+  //juce::OpenGLContext _glContext;
+
+  //juce::Colour GetAgeColour(int age);
 };
