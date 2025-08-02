@@ -15,7 +15,6 @@ void LifeGridComponent::paint(juce::Graphics& g)
   g.fillAll(juce::Colours::black);
 
   juce::Rectangle<float> bounds = getLocalBounds().toFloat();
-
   const float originX = bounds.getX();
   const float originY = bounds.getY();
   const juce::Colour deadColour = juce::Colours::transparentBlack;
@@ -26,11 +25,34 @@ void LifeGridComponent::paint(juce::Graphics& g)
     {
       const float left = originX + x * _cellPaintSize.x;
       const float top = originY + y * _cellPaintSize.y;
-
       const juce::Rectangle<float> cellRect(left, top, _cellPaintSize.x, _cellPaintSize.y);
 
-      const bool alive = (_life.GetCell(x, y).alive == 1);
-      g.setColour(alive ? juce::Colours::green : deadColour);
+      const Cell cell = _life.GetCell(x, y);
+      const bool alive = (cell.alive == 1);
+
+      if (alive)
+      {
+        juce::Colour cellColour;
+
+        if (cell.age == -1)
+        {
+          // Age not used — default bright green
+          cellColour = juce::Colours::green;
+        }
+        else
+        {
+          // Age used — brighten with age
+          float brightness = juce::jlimit(0.2f, 1.0f, 0.2f + (cell.age / 20.0f)); // age 0 = 0.2, age 20 = 1.0
+          cellColour = juce::Colours::green.withBrightness(brightness);
+        }
+
+        g.setColour(cellColour);
+      }
+      else
+      {
+        g.setColour(deadColour);
+      }
+
       g.fillRect(cellRect);
     }
   }

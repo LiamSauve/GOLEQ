@@ -197,12 +197,21 @@ void Life::Update_Conway()
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
-      const int currentCellState = _currentGen[x][y].alive;
+      const Cell current = _currentGen[x][y];
       const int liveNeighbours = CountLiveNeighbours(x, y);
-
-      _nextGen[x][y].alive = (currentCellState == 1)
-        ? ((liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0)
-        : (liveNeighbours == 3 ? 1 : 0);
+      Cell next = current;
+      if (current.alive == 1)
+      {
+        // Survives with 2 or 3 neighbors
+        next.alive = (liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0;
+      }
+      else
+      {
+        // Born with exactly 3 neighbors
+        next.alive = (liveNeighbours == 3) ? 1 : 0;
+      }
+      next.age = -1;
+      _nextGen[x][y] = next;
     }
   }
   std::swap(_currentGen, _nextGen);
@@ -215,17 +224,26 @@ void Life::Update_Highlife()
   //   - Survives with 2 or 3 live neighbours
   // If dead:
   //   - Comes to life with 3 or 6 live neighbours
-
   for (int x = 0; x < _gridWidth; ++x)
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
-      const int currentCellState = _currentGen[x][y].alive;
+      const Cell current = _currentGen[x][y];
       const int liveNeighbours = CountLiveNeighbours(x, y);
+      Cell next = current;
 
-      _nextGen[x][y].alive = (currentCellState == 1)
-        ? ((liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0)
-        : ((liveNeighbours == 3 || liveNeighbours == 6) ? 1 : 0);
+      if (current.alive == 1)
+      {
+        // Survives with 2 or 3 neighbors
+        next.alive = (liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0;
+      }
+      else
+      {
+        // Born with 3 or 6 neighbors
+        next.alive = (liveNeighbours == 3 || liveNeighbours == 6) ? 1 : 0;
+      }
+      next.age = -1;
+      _nextGen[x][y] = next;
     }
   }
   std::swap(_currentGen, _nextGen);
@@ -241,9 +259,15 @@ void Life::Update_Seeds()
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
+      const Cell current = _currentGen[x][y];
       const int liveNeighbours = CountLiveNeighbours(x, y);
-  
-      _nextGen[x][y].alive = (_currentGen[x][y].alive == 0 && liveNeighbours == 2) ? 1 : 0;
+      Cell next = current;
+
+      // Seeds: only dead cells with exactly 2 neighbors come to life
+      next.alive = (current.alive == 0 && liveNeighbours == 2) ? 1 : 0;
+      next.age = -1;
+
+      _nextGen[x][y] = next;
     }
   }
   std::swap(_currentGen, _nextGen);
