@@ -2,10 +2,13 @@
 #include "Constants.h"
 
 LifeGridComponent::LifeGridComponent() :
-  _life(Constants::SimWidthMax, Constants::SimHeightMax)
+  _life(Constants::SimWidthMax, Constants::SimHeightMax),
+  _isPlaying(false),
+  _cellPaintSize({Constants::CellPaintSize, Constants::CellPaintSize }),
+  _isDragging(false),
+  _dragModeErase(false)
 {
   _life.Randomize();
-  //setCellSize(_grid.GetWidth(), _grid.GetHeight());
   SetCellPaintSize(Constants::CellPaintSize, Constants::CellPaintSize);
   startTimerHz(10); // 10 times per second for now
 }
@@ -40,7 +43,7 @@ void LifeGridComponent::paint(juce::Graphics& g)
 
         if (cell.age == -1)
         {
-          // Age not used — default bright green
+          // Age not used â€” default bright green
           cellColour = juce::Colours::green;
         }
         else

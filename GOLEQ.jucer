@@ -4,6 +4,19 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="FEhiWy" name="GOLEQ">
     <GROUP id="{00BF987B-A1B4-623D-7019-3A7759045E9A}" name="Source">
+      <FILE id="tj0O7E" name="Cell.h" compile="0" resource="0" file="Source/Cell.h"/>
+      <FILE id="Za76fd" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
+      <FILE id="h2yCty" name="ControlPanelComponent.cpp" compile="1" resource="0"
+            file="Source/ControlPanelComponent.cpp"/>
+      <FILE id="uYaWcE" name="ControlPanelComponent.h" compile="0" resource="0"
+            file="Source/ControlPanelComponent.h"/>
+      <FILE id="B7qBi3" name="ILife.h" compile="0" resource="0" file="Source/ILife.h"/>
+      <FILE id="qIPk4b" name="Life.cpp" compile="1" resource="0" file="Source/Life.cpp"/>
+      <FILE id="EXLccm" name="Life.h" compile="0" resource="0" file="Source/Life.h"/>
+      <FILE id="HcWdlI" name="LifeGridComponent.cpp" compile="1" resource="0"
+            file="Source/LifeGridComponent.cpp"/>
+      <FILE id="mlEfs2" name="LifeGridComponent.h" compile="0" resource="0"
+            file="Source/LifeGridComponent.h"/>
       <FILE id="HMMxRk" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="PJhoSv" name="PluginProcessor.h" compile="0" resource="0"
@@ -31,7 +44,7 @@
   </MODULES>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022">
+    <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="OpenGL32.lib">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="GOLEQ"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="GOLEQ"/>

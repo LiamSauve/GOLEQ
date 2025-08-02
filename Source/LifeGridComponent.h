@@ -27,8 +27,8 @@ public:
 
 private:
   Life _life;
-  bool _isPlaying = false;
+  bool _isPlaying;
   juce::Point<float> _cellPaintSize;
-  bool _isDragging = false;
-  bool _dragModeErase = false;
+  bool _isDragging;
+  bool _dragModeErase;
 };

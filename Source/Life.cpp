@@ -346,7 +346,7 @@ void Life::Update_OrganicLife()
           next.alive = 0;
         else
         {
-          // Try to spawn nearby — increased spread chance
+          // Try to spawn nearby â€” increased spread chance
           for (int i = 0; i < 2; ++i) // try multiple directions
           {
             int dx = rand() % 3 - 1;
