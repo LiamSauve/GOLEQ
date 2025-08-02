@@ -19,6 +19,9 @@ namespace Constants
   static constexpr auto CA_Conway_Label = "Conway's Life";
   static constexpr auto CA_HighLife_Label = "HighLife";
   static constexpr auto CA_Seeds_Label = "Seeds";
+  static constexpr auto CA_Maze_Label = "Maze";
+  static constexpr auto CA_DataMosh_Label = "DataMosh";
+  static constexpr auto CA_OrganicLife_Label = "OrganicLife";
 
   // Control Panel: Audio Effect Labels
   static constexpr auto Effect_EQ_Label = "EQ Sweep";
@@ -55,7 +58,10 @@ enum CAVariant
 {
   Conway = 1,
   HighLife,
-  Seeds
+  Seeds,
+  Maze,
+  DataMosh,
+  OrganicLife
 };
 
 enum EffectType

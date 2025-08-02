@@ -171,6 +171,15 @@ void Life::Update()
   case CAVariant::Seeds:
     Update_Seeds();
     break;
+  case CAVariant::Maze:
+    Update_Maze();
+    break;
+  case CAVariant::DataMosh:
+    Update_DataMosh();
+    break;
+  case CAVariant::OrganicLife:
+    Update_OrganicLife();
+    break;
   default:
     Update_Conway();
     break;
@@ -238,76 +247,106 @@ void Life::Update_Seeds()
     }
   }
   std::swap(_currentGen, _nextGen);
+}
 
+void Life::Update_Maze()
+{
   // Maze rules:
   // If alive:
   //   - Survives with 1 to 5 live neighbours
   // If dead:
   //   - Comes to life with exactly 3 live neighbours
-  //for (int x = 0; x < _gridWidth; ++x)
-  //{
-  //  for (int y = 0; y < _gridHeight; ++y)
-  //  {
-  //    const int currentCellState = _currentGen[x][y];
-  //    const int liveNeighbours = CountLiveNeighbours(x, y);
-  //
-  //    _nextGen[x][y] = (currentCellState == 1)
-  //      ? ((liveNeighbours >= 1 && liveNeighbours <= 5) ? 1 : 0)
-  //      : (liveNeighbours == 3 ? 1 : 0);
-  //  }
-  //}
-  //std::swap(_currentGen, _nextGen);
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      const int currentCellState = _currentGen[x][y].alive;
+      const int liveNeighbours = CountLiveNeighbours(x, y);
+  
+      _nextGen[x][y].alive = (currentCellState == 1)
+        ? ((liveNeighbours >= 1 && liveNeighbours <= 5) ? 1 : 0)
+        : (liveNeighbours == 3 ? 1 : 0);
+    }
+  }
+  std::swap(_currentGen, _nextGen);
+}
 
-  // DATA MOSH
-  //for (int x = 0; x < _gridWidth; ++x)
-  //{
-  //  for (int y = 0; y < _gridHeight; ++y)
-  //  {
-  //    int srcX = (x + rand() % 3 - 1 + _gridWidth) % _gridWidth;
-  //    int srcY = (y + rand() % 3 - 1 + _gridHeight) % _gridHeight;
-  //
-  //    // Blend current cell with a nearby one
-  //    int val = (_currentGen[x][y] + _currentGen[srcX][srcY]) / 2;
-  //
-  //    // Add noise or motion bias
-  //    if (rand() % 10 < 2)
-  //      val = 1 - val; // occasional inversion
-  //
-  //    _nextGen[x][y] = val;
-  //  }
-  //}
-  //std::swap(_currentGen, _nextGen);
+void Life::Update_DataMosh()
+{
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      int srcX = (x + rand() % 3 - 1 + _gridWidth) % _gridWidth;
+      int srcY = (y + rand() % 3 - 1 + _gridHeight) % _gridHeight;
 
-  // organic growth
-  //for (int x = 0; x < _gridWidth; ++x)
-  //{
-  //  for (int y = 0; y < _gridHeight; ++y)
-  //  {
-  //    int liveNeighbours = CountLiveNeighbours(x, y);
-  //    int current = _currentGen[x][y].alive;
-  //
-  //    if (current == 1)
-  //    {
-  //      // Survive or spread
-  //      _nextGen[x][y].alive = 1;
-  //      if (liveNeighbours >= 2 && liveNeighbours <= 4)
-  //      {
-  //        // Try to spawn nearby
-  //        int dx = rand() % 3 - 1;
-  //        int dy = rand() % 3 - 1;
-  //        int nx = (x + dx + _gridWidth) % _gridWidth;
-  //        int ny = (y + dy + _gridHeight) % _gridHeight;
-  //        _nextGen[nx][ny].alive = 1;
-  //      }
-  //    }
-  //    else
-  //    {
-  //      // Occasional spontaneous birth
-  //      _nextGen[x][y].alive = (rand() % 100 < 2) ? 1 : 0;
-  //    }
-  //  }
-  //}
-  //std::swap(_currentGen, _nextGen);
+      const Cell& current = _currentGen[x][y];
+      const Cell& neighbor = _currentGen[srcX][srcY];
+
+      // Blend alive state and age
+      int blendedAlive = (current.alive + neighbor.alive) / 2;
+      int blendedAge = (current.age + neighbor.age) / 2;
+
+      // Add noise or motion bias
+      if (rand() % 10 < 2)
+        blendedAlive = 1 - blendedAlive; // occasional inversion
+
+      // Assign to nextGen
+      _nextGen[x][y].alive = blendedAlive;
+      _nextGen[x][y].age = blendedAge;
+    }
+  }
+
+  std::swap(_currentGen, _nextGen);
+}
+
+void Life::Update_OrganicLife()
+{
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      int liveNeighbours = CountLiveNeighbours(x, y);
+      Cell current = _currentGen[x][y];
+      Cell next = current;
+
+      if (current.alive == 1)
+      {
+        next.age++;
+
+        // Death by isolation or overcrowding
+        if (liveNeighbours <= 1 || liveNeighbours >= 5)
+          next.alive = 0;
+        // Death by age
+        else if (next.age > 20)
+          next.alive = 0;
+        else
+        {
+          // Try to spawn nearby — increased spread chance
+          for (int i = 0; i < 2; ++i) // try multiple directions
+          {
+            int dx = rand() % 3 - 1;
+            int dy = rand() % 3 - 1;
+            int nx = (x + dx + _gridWidth) % _gridWidth;
+            int ny = (y + dy + _gridHeight) % _gridHeight;
+
+            if (_currentGen[nx][ny].alive == 0 && rand() % 100 < 50) // 50% chance to spread
+              _nextGen[nx][ny] = { 1, 0 };
+          }
+        }
+      }
+      else
+      {
+        // Rarer spontaneous birth
+        if (rand() % 1000 < 1) // 0.1% chance
+          next = { 1, 0 };
+      }
+
+      _nextGen[x][y] = next;
+    }
+  }
+
+  std::swap(_currentGen, _nextGen);
 }
 
 void Life::ToggleCell(int x, int y)

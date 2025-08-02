@@ -22,6 +22,9 @@ public:
   void Update_Conway();
   void Update_Highlife();
   void Update_Seeds();
+  void Update_Maze();
+  void Update_DataMosh();
+  void Update_OrganicLife();
   void ToggleCell(int x, int y);
   int GetActiveLiveCellCount() const override;
   Cell GetCell(int x, int y) const override;

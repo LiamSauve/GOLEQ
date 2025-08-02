@@ -103,6 +103,9 @@ void ControlPanelComponent::InitializeControls()
   _caVariantDropdown.addItem(Constants::CA_Conway_Label, CAVariant::Conway);
   _caVariantDropdown.addItem(Constants::CA_HighLife_Label, CAVariant::HighLife);
   _caVariantDropdown.addItem(Constants::CA_Seeds_Label, CAVariant::Seeds);
+  _caVariantDropdown.addItem(Constants::CA_Maze_Label, CAVariant::Maze);
+  _caVariantDropdown.addItem(Constants::CA_DataMosh_Label, CAVariant::DataMosh);
+  _caVariantDropdown.addItem(Constants::CA_OrganicLife_Label, CAVariant::OrganicLife);
   _caVariantDropdown.setSelectedId(CAVariant::Conway);
 
   _effectDropdown.addItem(Constants::Effect_EQ_Label, EffectType::EQ);
