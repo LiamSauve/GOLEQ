@@ -3,6 +3,7 @@
 #include <juce_core/juce_core.h>
 #include "ILife.h"
 #include "Constants.h"
+#include "Cell.h"
 
 class Life : public ILife
 {
@@ -23,7 +24,7 @@ public:
   void Update_Seeds();
   void ToggleCell(int x, int y);
   int GetActiveLiveCellCount() const override;
-  int GetCell(int x, int y) const override;
+  Cell GetCell(int x, int y) const override;
   int GetWidth() const override;
   int GetHeight() const override;
   void SetSize(int newWidth, int newHeight);
@@ -36,7 +37,7 @@ private:
   static constexpr int kMaxCellStateExclusive = 2;
   int _gridWidth;
   int _gridHeight;
-  std::vector<std::vector<int>> _currentGen;
-  std::vector<std::vector<int>> _nextGen;
+  std::vector<std::vector<Cell>> _currentGen;
+  std::vector<std::vector<Cell>> _nextGen;
   CAVariant _caVariant;
 };

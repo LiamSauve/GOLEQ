@@ -1,11 +1,11 @@
 #include "Life.h"
 #include "Constants.h"
 
-Life::Life(int width, int height)
-  : _gridWidth(width),
+Life::Life(int width, int height) :
+  _gridWidth(width),
   _gridHeight(height),
-  _currentGen(width, std::vector<int>(height, 0)),
-  _nextGen(width, std::vector<int>(height, 0)),
+  _currentGen(width, std::vector<Cell>(height, { 0, 0 })),
+  _nextGen(width, std::vector<Cell>(height, { 0, 0 })),
   _caVariant(CAVariant::Conway)
 {
 }
@@ -16,7 +16,7 @@ void Life::KillAll()
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
-      _currentGen[x][y] = 0;
+      _currentGen[x][y].alive = 0;
     }
   }
 }
@@ -27,7 +27,7 @@ void Life::Randomize()
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
-      _currentGen[x][y] = juce::Random::getSystemRandom().nextInt(kMaxCellStateExclusive);
+      _currentGen[x][y].alive = juce::Random::getSystemRandom().nextInt(kMaxCellStateExclusive);
     }
   }
 }
@@ -63,7 +63,7 @@ void Life::GenerateClusterBlobs()
         int y = cy + dy;
         if (IsInBounds(x, y) && rand() % 100 < 40)
         {
-          _currentGen[x][y] = 1;
+          _currentGen[x][y].alive = 1;
         }
       }
     }
@@ -78,7 +78,7 @@ void Life::GenerateDiagonalBands()
     {
       if ((x + y) % 10 < 3 && rand() % 100 < 50)
       {
-        _currentGen[x][y] = 1;
+        _currentGen[x][y].alive = 1;
       }
     }
   }
@@ -92,11 +92,11 @@ void Life::GenerateGliderSeeds()
     int y = rand() % (_gridHeight - 3);
 
     // Simple glider pattern
-    _currentGen[x + 1][y] = 1;
-    _currentGen[x + 2][y + 1] = 1;
-    _currentGen[x][y + 2] = 1;
-    _currentGen[x + 1][y + 2] = 1;
-    _currentGen[x + 2][y + 2] = 1;
+    _currentGen[x + 1][y].alive     = 1;
+    _currentGen[x + 2][y + 1].alive = 1;
+    _currentGen[x][y + 2].alive     = 1;
+    _currentGen[x + 1][y + 2].alive = 1;
+    _currentGen[x + 2][y + 2].alive = 1;
   }
 }
 
@@ -107,7 +107,7 @@ void Life::GenerateCornerBias()
     for (int y = 0; y < _gridHeight / 4; ++y)
     {
       if (rand() % 100 < 60)
-        _currentGen[x][y] = 1; // Top-left bias
+        _currentGen[x][y].alive = 1; // Top-left bias
     }
   }
 
@@ -116,7 +116,7 @@ void Life::GenerateCornerBias()
     for (int y = _gridHeight - _gridHeight / 4; y < _gridHeight; ++y)
     {
       if (rand() % 100 < 60)
-        _currentGen[x][y] = 1; // Bottom-right bias
+        _currentGen[x][y].alive = 1; // Bottom-right bias
     }
   }
 }
@@ -140,7 +140,7 @@ void Life::GenerateRingFormations()
 
     if (IsInBounds(x, y))
     {
-      _currentGen[x][y] = 1;
+      _currentGen[x][y].alive = 1;
     }
 
     for (int dx = -2; dx <= 2; dx += 2)
@@ -151,7 +151,7 @@ void Life::GenerateRingFormations()
         int ny = y + dy;
         if (IsInBounds(nx, ny))
         {
-          _currentGen[nx][ny] = 1;
+          _currentGen[nx][ny].alive = 1;
         }
       }
     }
@@ -188,10 +188,10 @@ void Life::Update_Conway()
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
-      const int currentCellState = _currentGen[x][y];
+      const int currentCellState = _currentGen[x][y].alive;
       const int liveNeighbours = CountLiveNeighbours(x, y);
 
-      _nextGen[x][y] = (currentCellState == 1)
+      _nextGen[x][y].alive = (currentCellState == 1)
         ? ((liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0)
         : (liveNeighbours == 3 ? 1 : 0);
     }
@@ -211,10 +211,10 @@ void Life::Update_Highlife()
   {
     for (int y = 0; y < _gridHeight; ++y)
     {
-      const int currentCellState = _currentGen[x][y];
+      const int currentCellState = _currentGen[x][y].alive;
       const int liveNeighbours = CountLiveNeighbours(x, y);
 
-      _nextGen[x][y] = (currentCellState == 1)
+      _nextGen[x][y].alive = (currentCellState == 1)
         ? ((liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0)
         : ((liveNeighbours == 3 || liveNeighbours == 6) ? 1 : 0);
     }
@@ -234,15 +234,85 @@ void Life::Update_Seeds()
     {
       const int liveNeighbours = CountLiveNeighbours(x, y);
   
-      _nextGen[x][y] = (_currentGen[x][y] == 0 && liveNeighbours == 2) ? 1 : 0;
+      _nextGen[x][y].alive = (_currentGen[x][y].alive == 0 && liveNeighbours == 2) ? 1 : 0;
     }
   }
   std::swap(_currentGen, _nextGen);
+
+  // Maze rules:
+  // If alive:
+  //   - Survives with 1 to 5 live neighbours
+  // If dead:
+  //   - Comes to life with exactly 3 live neighbours
+  //for (int x = 0; x < _gridWidth; ++x)
+  //{
+  //  for (int y = 0; y < _gridHeight; ++y)
+  //  {
+  //    const int currentCellState = _currentGen[x][y];
+  //    const int liveNeighbours = CountLiveNeighbours(x, y);
+  //
+  //    _nextGen[x][y] = (currentCellState == 1)
+  //      ? ((liveNeighbours >= 1 && liveNeighbours <= 5) ? 1 : 0)
+  //      : (liveNeighbours == 3 ? 1 : 0);
+  //  }
+  //}
+  //std::swap(_currentGen, _nextGen);
+
+  // DATA MOSH
+  //for (int x = 0; x < _gridWidth; ++x)
+  //{
+  //  for (int y = 0; y < _gridHeight; ++y)
+  //  {
+  //    int srcX = (x + rand() % 3 - 1 + _gridWidth) % _gridWidth;
+  //    int srcY = (y + rand() % 3 - 1 + _gridHeight) % _gridHeight;
+  //
+  //    // Blend current cell with a nearby one
+  //    int val = (_currentGen[x][y] + _currentGen[srcX][srcY]) / 2;
+  //
+  //    // Add noise or motion bias
+  //    if (rand() % 10 < 2)
+  //      val = 1 - val; // occasional inversion
+  //
+  //    _nextGen[x][y] = val;
+  //  }
+  //}
+  //std::swap(_currentGen, _nextGen);
+
+  // organic growth
+  //for (int x = 0; x < _gridWidth; ++x)
+  //{
+  //  for (int y = 0; y < _gridHeight; ++y)
+  //  {
+  //    int liveNeighbours = CountLiveNeighbours(x, y);
+  //    int current = _currentGen[x][y].alive;
+  //
+  //    if (current == 1)
+  //    {
+  //      // Survive or spread
+  //      _nextGen[x][y].alive = 1;
+  //      if (liveNeighbours >= 2 && liveNeighbours <= 4)
+  //      {
+  //        // Try to spawn nearby
+  //        int dx = rand() % 3 - 1;
+  //        int dy = rand() % 3 - 1;
+  //        int nx = (x + dx + _gridWidth) % _gridWidth;
+  //        int ny = (y + dy + _gridHeight) % _gridHeight;
+  //        _nextGen[nx][ny].alive = 1;
+  //      }
+  //    }
+  //    else
+  //    {
+  //      // Occasional spontaneous birth
+  //      _nextGen[x][y].alive = (rand() % 100 < 2) ? 1 : 0;
+  //    }
+  //  }
+  //}
+  //std::swap(_currentGen, _nextGen);
 }
 
 void Life::ToggleCell(int x, int y)
 {
-  _currentGen[x][y] = (_currentGen[x][y] == 0) ? 1 : 0;
+  _currentGen[x][y].alive = (_currentGen[x][y].alive == 0) ? 1 : 0;
 }
 
 int Life::GetActiveLiveCellCount() const
@@ -252,7 +322,7 @@ int Life::GetActiveLiveCellCount() const
   {
     for (int y = 0; y < _currentGen[x].size(); ++y)
     {
-      if (_currentGen[x][y] != 0)
+      if (_currentGen[x][y].alive != 0)
       {
         ++count;
       }
@@ -262,7 +332,7 @@ int Life::GetActiveLiveCellCount() const
 }
 
 
-int Life::GetCell(int x, int y) const
+Cell Life::GetCell(int x, int y) const
 {
   return _currentGen[x][y];
 }
@@ -290,7 +360,7 @@ void Life::SetSize(int newWidth, int newHeight)
 
     for (int i = 0; i < prepend; ++i)
     {
-      std::vector<int> newCol(newHeight, 0);
+      std::vector<Cell> newCol(newHeight, { 0, 0 });
       _currentGen.insert(_currentGen.begin(), newCol);
       _nextGen.insert(_nextGen.begin(), newCol);
     }
@@ -303,7 +373,7 @@ void Life::SetSize(int newWidth, int newHeight)
 
     for (int i = 0; i < append; ++i)
     {
-      std::vector<int> newCol(newHeight, 0);
+      std::vector<Cell> newCol(newHeight, { 0, 0 });
       _currentGen.push_back(newCol);
       _nextGen.push_back(newCol);
     }
@@ -324,8 +394,8 @@ void Life::SetSize(int newWidth, int newHeight)
 
     if (rowDiff > 0)
     {
-      _currentGen[x].insert(_currentGen[x].begin(), prepend, 0);
-      _nextGen[x].insert(_nextGen[x].begin(), prepend, 0);
+      _currentGen[x].insert(_currentGen[x].begin(), prepend, Cell{ 0, 0 });
+      _nextGen[x].insert(_nextGen[x].begin(), prepend, Cell{ 0, 0 });
     }
     else if (rowDiff < 0)
     {
@@ -335,8 +405,8 @@ void Life::SetSize(int newWidth, int newHeight)
 
     if (rowDiff > 0)
     {
-      _currentGen[x].insert(_currentGen[x].end(), append, 0);
-      _nextGen[x].insert(_nextGen[x].end(), append, 0);
+      _currentGen[x].insert(_currentGen[x].end(), append, Cell{ 0, 0 });
+      _nextGen[x].insert(_nextGen[x].end(), append, Cell{ 0, 0 });
     }
     else if (rowDiff < 0)
     {
@@ -369,9 +439,9 @@ int Life::CountLiveNeighbours(int x, int y) const
       const int neighbourY = y + dy;
 
       if (neighbourX >= 0 && neighbourY >= 0 &&
-        neighbourX < _gridWidth && neighbourY < _gridHeight)
+          neighbourX < _gridWidth && neighbourY < _gridHeight)
       {
-        liveCount += _currentGen[neighbourX][neighbourY];
+        liveCount += _currentGen[neighbourX][neighbourY].alive;
       }
     }
   }
