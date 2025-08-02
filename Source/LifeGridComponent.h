@@ -1,14 +1,22 @@
 #pragma once
-#include <JuceHeader.h>
 #include "Life.h"
 
-class LifeGridComponent : public juce::Component, public juce::Timer
+class LifeGridComponent :
+  public juce::Component,
+  public juce::Timer,
+  public juce::OpenGLRenderer
 {
 public:
   LifeGridComponent();
+  ~LifeGridComponent();
   void paint(juce::Graphics& g) override;
   void resized() override;
   void timerCallback() override;
+
+  // OpenGLRenderer methods
+  void newOpenGLContextCreated() override;
+  void renderOpenGL() override;
+  void openGLContextClosing() override;
 
   void TogglePlayPause();
   void SetCellPaintSize(int width, int height);
@@ -31,4 +39,5 @@ private:
   juce::Point<float> _cellPaintSize;
   bool _isDragging;
   bool _dragModeErase;
+  juce::OpenGLContext _glContext;
 };

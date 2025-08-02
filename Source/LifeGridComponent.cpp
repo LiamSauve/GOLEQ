@@ -9,9 +9,20 @@ LifeGridComponent::LifeGridComponent() :
   _dragModeErase(false)
 {
   _life.Randomize();
-  SetCellPaintSize(Constants::CellPaintSize, Constants::CellPaintSize);
+  
+  _glContext.setRenderer(this);
+  _glContext.attachTo(*this);
+  _glContext.setContinuousRepainting(true);
+
+
   startTimerHz(10); // 10 times per second for now
 }
+
+LifeGridComponent::~LifeGridComponent()
+{
+  _glContext.detach();
+}
+
 
 void LifeGridComponent::paint(juce::Graphics& g)
 {
@@ -86,6 +97,19 @@ void LifeGridComponent::timerCallback()
     _life.Update();
   }
   repaint();
+}
+
+void LifeGridComponent::newOpenGLContextCreated()
+{
+
+}
+void LifeGridComponent::renderOpenGL()
+{
+
+}
+void LifeGridComponent::openGLContextClosing()
+{
+
 }
 
 void LifeGridComponent::TogglePlayPause()
