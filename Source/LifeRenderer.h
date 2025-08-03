@@ -25,7 +25,6 @@ private:
   GLuint _quadVertexBuffer = 0;
 
   std::vector<CellRenderData> _pendingData;
-  std::vector<uint8_t> _pendingDataRaw;
   int _pendingWidth = 0;
   int _pendingHeight = 0;
   bool _isDataReady = false;
