@@ -4,6 +4,10 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="FEhiWy" name="GOLEQ">
     <GROUP id="{00BF987B-A1B4-623D-7019-3A7759045E9A}" name="Source">
+      <GROUP id="{E3F8597A-F227-FECA-DF8F-7C11D4F7D92F}" name="shaders">
+        <FILE id="jArirG" name="life.frag.glsl" compile="0" resource="1" file="Source/shaders/life.frag.glsl"/>
+        <FILE id="OQ5tUu" name="life.vert.glsl" compile="0" resource="1" file="Source/shaders/life.vert.glsl"/>
+      </GROUP>
       <FILE id="eLUlwe" name="LifeRenderer.h" compile="0" resource="0" file="Source/LifeRenderer.h"/>
       <FILE id="ENbECW" name="LifeRenderer.cpp" compile="1" resource="0"
             file="Source/LifeRenderer.cpp"/>

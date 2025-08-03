@@ -84,7 +84,8 @@ void LifeGridComponent::paint(juce::Graphics& g)
 void LifeGridComponent::resized()
 {
   //repaint();
-  _renderer.setBounds(getLocalBounds());
+  //_renderer.setBounds(getLocalBounds());
+  _renderer.setBounds(0, 0, Constants::WindowWidth, Constants::SimulationHeight);
 }
 
 void LifeGridComponent::timerCallback()
@@ -189,7 +190,6 @@ juce::Point<int> LifeGridComponent::GetGridCoordsFromMouse(const juce::MouseEven
 
 void LifeGridComponent::Render()
 {
-  //UpdateLifeData(_life.GetRawData(), _life.GetWidth(), _life.GetHeight());
   UpdateLifeData(_life.GetRenderData(), _life.GetWidth(), _life.GetHeight());
 }
 
@@ -197,17 +197,3 @@ void LifeGridComponent::UpdateLifeData(const std::vector<CellRenderData>& data, 
 {
   _renderer.SetLifeData(data, width, height);
 }
-
-//juce::Colour LifeGridComponent::GetAgeColour(int age)
-//{
-//  float ratio = juce::jlimit(0.0f, 1.0f, (float)(age - Constants::MinAge) / (float)(Constants::MaxAge - Constants::MinAge));
-//
-//  juce::Colour start = juce::Colours::green;
-//  juce::Colour mid = juce::Colours::green.darker(0.6f);
-//  juce::Colour end = juce::Colours::red.darker(0.8f);
-//
-//  if (ratio < 0.5f)
-//    return start.interpolatedWith(mid, ratio * 2.0f);
-//  else
-//    return mid.interpolatedWith(end, (ratio - 0.5f) * 2.0f);
-//}
