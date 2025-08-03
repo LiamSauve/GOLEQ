@@ -9,10 +9,6 @@ LifeGridComponent::LifeGridComponent() :
   _dragModeErase(false)
 {
   _life.Randomize();
-  
-  //_glContext.setRenderer(this);
-  //_glContext.attachTo(*this);
-  //_glContext.setContinuousRepainting(true);
 
   startTimerHz(10); // 10 times per second for now
 }
@@ -97,51 +93,6 @@ void LifeGridComponent::timerCallback()
   }
   repaint();
 }
-
-//void LifeGridComponent::newOpenGLContextCreated()
-//{
-//
-//}
-//void LifeGridComponent::renderOpenGL()
-//{
-//  juce::OpenGLHelpers::clear(juce::Colours::black);
-//
-//  const int gridWidth = _life.GetWidth();
-//  const int gridHeight = _life.GetHeight();
-//
-//  float cellWidth = 2.0f / gridWidth;
-//  float cellHeight = 2.0f / gridHeight;
-//
-//  for (int y = 0; y < gridHeight; ++y)
-//  {
-//    for (int x = 0; x < gridWidth; ++x)
-//    {
-//      const Cell& cell = _life.GetCell(x, y);
-//      if (cell.alive)
-//      {
-//        juce::Colour colour = GetAgeColour(cell.age);
-//        
-//        /* BROKEN GL CALLS ARE HERE*/
-//        glColor3f(colour.getFloatRed(), colour.getFloatGreen(), colour.getFloatBlue());
-//
-//        float px = -1.0f + x * cellWidth;
-//        float py = -1.0f + y * cellHeight;
-//
-//        glBegin(GL_QUADS);
-//        glVertex2f(px, py);
-//        glVertex2f(px + cellWidth, py);
-//        glVertex2f(px + cellWidth, py + cellHeight);
-//        glVertex2f(px, py + cellHeight);
-//        glEnd();
-//        /* ARGH*/
-//      }
-//    }
-//  }
-//}
-//void LifeGridComponent::openGLContextClosing()
-//{
-//
-//}
 
 void LifeGridComponent::TogglePlayPause()
 {

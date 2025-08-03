@@ -1,10 +1,10 @@
 #pragma once
 #include "Life.h"
+#include "LifeRenderer.h"
 
 class LifeGridComponent :
   public juce::Component,
   public juce::Timer
-  /*public juce::OpenGLRenderer*/
 {
 public:
   LifeGridComponent();
@@ -12,11 +12,6 @@ public:
   void paint(juce::Graphics& g) override;
   void resized() override;
   void timerCallback() override;
-
-  // OpenGLRenderer methods
-  //void newOpenGLContextCreated() override;
-  //void renderOpenGL() override;
-  //void openGLContextClosing() override;
 
   void TogglePlayPause();
   void SetCellPaintSize(int width, int height);
@@ -36,10 +31,11 @@ public:
 private:
   Life _life;
   bool _isPlaying;
-  juce::Point<float> _cellPaintSize;
+  LifeRenderer _lifeRenderer;
   bool _isDragging;
   bool _dragModeErase;
-  //juce::OpenGLContext _glContext;
+  juce::Point<float> _cellPaintSize;
+  juce::OpenGLContext _glContext;
 
   //juce::Colour GetAgeColour(int age);
 };

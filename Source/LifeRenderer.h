@@ -15,14 +15,14 @@ public:
   //void update() override {}
 
   // Upload life data to GPU
-  void setLifeData(const std::vector<uint8_t>& data, int width, int height);
+  void SetLifeData(const std::vector<uint8_t>& data, int width, int height);
 
 private:
   std::unique_ptr<juce::OpenGLShaderProgram> _shader;
 
   GLuint _lifeTexture = 0;
-  GLuint _vao = 0;
-  GLuint _vbo = 0;
+  GLuint _quadVertexArray = 0;
+  GLuint _quadVertexBuffer = 0;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LifeRenderer)
 };
