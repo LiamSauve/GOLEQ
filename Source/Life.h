@@ -32,6 +32,7 @@ public:
   int GetHeight() const override;
   void SetSize(int newWidth, int newHeight);
   void SetCAVariant(CAVariant caVariant);
+  std::vector<CellRenderData> GetRenderData() const;
 
 private:
   int CountLiveNeighbours(int x, int y) const;

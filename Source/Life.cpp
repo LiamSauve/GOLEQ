@@ -487,6 +487,24 @@ void Life::SetCAVariant(CAVariant caVariant)
   _caVariant = caVariant;
 }
 
+std::vector<CellRenderData> Life::GetRenderData() const
+{
+  std::vector<CellRenderData> data;
+  data.reserve(_currentGen.size() * _currentGen[0].size());
+
+  for (const auto& row : _currentGen)
+  {
+    for (const auto& cell : row)
+    {
+      CellRenderData renderCell;
+      renderCell.alive = cell.alive;
+      renderCell.age = cell.age;
+      data.push_back(renderCell);
+    }
+  }
+  return data;
+}
+
 int Life::CountLiveNeighbours(int x, int y) const
 {
   int liveCount = 0;

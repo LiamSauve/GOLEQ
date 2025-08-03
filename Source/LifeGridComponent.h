@@ -28,10 +28,13 @@ public:
   void mouseUp(const juce::MouseEvent& event);
   juce::Point<int> GetGridCoordsFromMouse(const juce::MouseEvent& event);
 
+  void Render();
+  void UpdateLifeData(const std::vector<CellRenderData>& data, int width, int height);
+
 private:
   Life _life;
+  LifeRenderer _renderer;
   bool _isPlaying;
-  LifeRenderer _lifeRenderer;
   bool _isDragging;
   bool _dragModeErase;
   juce::Point<float> _cellPaintSize;

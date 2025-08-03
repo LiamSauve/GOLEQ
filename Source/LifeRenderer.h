@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Cell.h"
 
 class LifeRenderer : public juce::OpenGLAppComponent
 {
@@ -15,7 +16,7 @@ public:
   //void update() override {}
 
   // Upload life data to GPU
-  void SetLifeData(const std::vector<uint8_t>& data, int width, int height);
+  void SetLifeData(const std::vector<CellRenderData>& data, int width, int height);
 
 private:
   std::unique_ptr<juce::OpenGLShaderProgram> _shader;

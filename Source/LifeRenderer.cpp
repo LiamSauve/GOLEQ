@@ -107,7 +107,7 @@ void LifeRenderer::render()
   glBindVertexArray(0);
 }
 
-void LifeRenderer::SetLifeData(const std::vector<uint8_t>& data, int width, int height)
+void LifeRenderer::SetLifeData(const std::vector<CellRenderData>& data, int width, int height)
 {
   jassert(juce::OpenGLHelpers::isContextActive());
 

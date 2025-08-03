@@ -10,6 +10,7 @@ LifeGridComponent::LifeGridComponent() :
 {
   _life.Randomize();
 
+  addAndMakeVisible(_renderer);
   startTimerHz(10); // 10 times per second for now
 }
 
@@ -82,7 +83,8 @@ void LifeGridComponent::paint(juce::Graphics& g)
 
 void LifeGridComponent::resized()
 {
-  repaint();
+  //repaint();
+  _renderer.setBounds(getLocalBounds());
 }
 
 void LifeGridComponent::timerCallback()
@@ -91,7 +93,7 @@ void LifeGridComponent::timerCallback()
   {
     _life.Update();
   }
-  repaint();
+  Render();
 }
 
 void LifeGridComponent::TogglePlayPause()
@@ -101,9 +103,6 @@ void LifeGridComponent::TogglePlayPause()
 
 void LifeGridComponent::SetCellPaintSize(int width, int height)
 {
-  //_cellPaintSize.x = static_cast<float>(UIConstants::SimWidthMax) / static_cast<float>(width);
-  //_cellPaintSize.y = static_cast<float>(UIConstants::SimHeightMax) / static_cast<float>(height);
-
   _cellPaintSize.x = static_cast<float>(width);
   _cellPaintSize.y = static_cast<float>(height);
 }
@@ -117,19 +116,19 @@ void LifeGridComponent::SetGridSize(int width, int height)
 void LifeGridComponent::Randomize()
 {
   _life.Randomize();
-  repaint();
+  Render();
 }
 
 void LifeGridComponent::RandomizeMeaningfully()
 {
   _life.RandomizeMeaningfully();
-  repaint();
+  Render();
 }
 
 void LifeGridComponent::NextGeneration()
 {
   _life.Update();
-  repaint();
+  Render();
 }
 
 void LifeGridComponent::SetCAVariant(CAVariant variant)
@@ -155,7 +154,7 @@ void LifeGridComponent::mouseDown(const juce::MouseEvent& event)
   _isDragging = true;
 
   _life.ToggleCell(gridX, gridY);
-  repaint();
+  Render();
 }
 
 void LifeGridComponent::mouseDrag(const juce::MouseEvent& event)
@@ -168,8 +167,7 @@ void LifeGridComponent::mouseDrag(const juce::MouseEvent& event)
   const auto [gridX, gridY] = GetGridCoordsFromMouse(event);
 
   _life.ToggleCell(gridX, gridY);
-  repaint();
-
+  Render();
 }
 
 void LifeGridComponent::mouseUp(const juce::MouseEvent&)
@@ -187,6 +185,17 @@ juce::Point<int> LifeGridComponent::GetGridCoordsFromMouse(const juce::MouseEven
       static_cast<int>(clampedX / _cellPaintSize.x),
       static_cast<int>(clampedY / _cellPaintSize.y)
   };
+}
+
+void LifeGridComponent::Render()
+{
+  //UpdateLifeData(_life.GetRawData(), _life.GetWidth(), _life.GetHeight());
+  UpdateLifeData(_life.GetRenderData(), _life.GetWidth(), _life.GetHeight());
+}
+
+void LifeGridComponent::UpdateLifeData(const std::vector<CellRenderData>& data, int width, int height)
+{
+  _renderer.SetLifeData(data, width, height);
 }
 
 //juce::Colour LifeGridComponent::GetAgeColour(int age)
