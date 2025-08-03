@@ -88,38 +88,33 @@ void LifeRenderer::shutdown()
 
 void LifeRenderer::render()
 {
-  jassert(juce::OpenGLHelpers::isContextActive());
+  std::lock_guard<std::mutex> lock(_dataMutex);
   
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  if (_shader == nullptr || _lifeTexture == 0)
+  if (_isDataReady)
   {
-    return;
+    if (_lifeTexture == 0)
+    {
+      glGenTextures(1, &_lifeTexture);
+      glBindTexture(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+  
+    glBindTexture(GL_TEXTURE_2D, _lifeTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, _pendingWidth, _pendingHeight, 0, GL_RED, GL_UNSIGNED_BYTE, _pendingData.data());
+  
+    _isDataReady = false;
   }
-
-  _shader->use();
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, _lifeTexture);
-  _shader->setUniform("lifeTexture", 0);
-
-  glBindVertexArray(_quadVertexArray);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-  glBindVertexArray(0);
 }
 
 void LifeRenderer::SetLifeData(const std::vector<CellRenderData>& data, int width, int height)
 {
-  jassert(juce::OpenGLHelpers::isContextActive());
 
-  if (_lifeTexture == 0)
-  {
-    glGenTextures(1, &_lifeTexture);
-    glBindTexture(GL_TEXTURE_2D, _lifeTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  }
-  glBindTexture(GL_TEXTURE_2D, _lifeTexture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data.data());
+  std::lock_guard<std::mutex> lock(_dataMutex);
+  _pendingData = data;
+  _pendingWidth = width;
+  _pendingHeight = height;
+  _isDataReady = true;
 }
