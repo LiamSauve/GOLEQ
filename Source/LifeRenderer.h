@@ -19,8 +19,17 @@ public:
   void paint(juce::Graphics& g);
 
   void initialise() override;
+  void initialise_LoadShader();
+  void initialise_SetupQuadVertexData();
+  void initialise_ConfigureVertexAttributes();
+
   void shutdown() override;
+
   void render() override;
+  void render_SetupViewportAndClear();
+  void render_UpdateTextureIfReady();
+  void render_UseShaderAndBindTexture();
+  void render_DrawQuad();
 
   void SetLifeData(const std::vector<std::vector<Cell>>& data, int width, int height);
   std::vector<uint8_t> FlattenRenderDataToPixels();

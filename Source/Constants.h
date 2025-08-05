@@ -40,9 +40,9 @@ namespace Constants
 
   // Control Panel: Simulation Size Sliders
   static constexpr int SimWidthMin = 32;
-  static constexpr int SimWidthMax = 128;
+  static constexpr int SimWidthMax = 1280;
   static constexpr int SimHeightMin = 18;
-  static constexpr int SimHeightMax = 72;
+  static constexpr int SimHeightMax = 720;
   static constexpr int SimSizeSliderInterval = 1;
 
   // Control Panel: Layout Dimensions & Styling
@@ -56,6 +56,9 @@ namespace Constants
   static constexpr int TextBoxWidth = 60;
   static constexpr int TextBoxHeight = 20;
   static const juce::Colour ControlPanelBackground{ 35, 35, 45 };
+
+  static const juce::String VertShaderLocation = "path/to/vertex.glsl";
+  static const juce::String FragShaderLocation = "path/to/fragment.glsl";
 }
 
 enum CAVariant

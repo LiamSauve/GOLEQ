@@ -16,75 +16,11 @@ LifeGridComponent::LifeGridComponent() :
 
 LifeGridComponent::~LifeGridComponent()
 {
-  //_glContext.detach();
-}
-
-
-void LifeGridComponent::paint(juce::Graphics& g)
-{
-  //g.fillAll(juce::Colours::black);
-
-  //juce::Rectangle<float> bounds = getLocalBounds().toFloat();
-  //const float originX = bounds.getX();
-  //const float originY = bounds.getY();
-  //const juce::Colour deadColour = juce::Colours::transparentBlack;
-
-  //for (int y = 0; y < _life.GetHeight(); ++y)
-  //{
-  //  for (int x = 0; x < _life.GetWidth(); ++x)
-  //  {
-  //    const float left = originX + x * _cellPaintSize.x;
-  //    const float top = originY + y * _cellPaintSize.y;
-  //    const juce::Rectangle<float> cellRect(left, top, _cellPaintSize.x, _cellPaintSize.y);
-
-  //    const Cell cell = _life.GetCell(x, y);
-  //    const bool alive = (cell.alive == 1);
-
-  //    if (alive)
-  //    {
-  //      juce::Colour cellColour;
-
-  //      if (cell.age == -1)
-  //      {
-  //        cellColour = juce::Colours::green;
-  //      }
-  //      else
-  //      {
-  //        // Normalize age to [0, 1]
-  //        const float ageRatio = juce::jlimit(0.0f, 1.0f, (float)(cell.age - Constants::MinAge) / (float)(Constants::MaxAge - Constants::MinAge));
-
-  //        juce::Colour startColour = juce::Colours::green;
-  //        juce::Colour midColour = juce::Colours::green.darker(0.6f);
-  //        juce::Colour endColour = juce::Colours::brown.darker(0.8f);
-
-  //        if (ageRatio < 0.5f)
-  //        {
-  //          float t = ageRatio * 2.0f;
-  //          cellColour = startColour.interpolatedWith(midColour, t);
-  //        }
-  //        else
-  //        {
-  //          float t = (ageRatio - 0.5f) * 2.0f;
-  //          cellColour = midColour.interpolatedWith(endColour, t);
-  //        }
-  //      }
-
-  //      g.setColour(cellColour);
-  //    }
-  //    else
-  //    {
-  //      g.setColour(deadColour);
-  //    }
-
-  //    g.fillRect(cellRect);
-  //  }
-  //}
+  //_glContext.detach(); // todo?
 }
 
 void LifeGridComponent::resized()
 {
-  //repaint();
-  //_renderer.setBounds(getLocalBounds());
   _renderer.setBounds(0, 0, Constants::WindowWidth, Constants::SimulationHeight);
 }
 

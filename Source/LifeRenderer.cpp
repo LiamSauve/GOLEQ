@@ -1,5 +1,6 @@
 #include "LifeRenderer.h"
 #include "Constants.h"
+#include "ShaderLoader.h"
 #include <fstream>
 #include <sstream>
 //#include <juce_opengl/juce_opengl.h>
@@ -26,91 +27,50 @@ void LifeRenderer::paint(juce::Graphics& g)
 
 void LifeRenderer::initialise()
 {
-  const char* vertexShader = R"(
-    #version 330 core
-    layout(location = 0) in vec2 position;
-    layout(location = 1) in vec2 texCoord;
+  initialise_LoadShader();
+  initialise_SetupQuadVertexData();
+  initialise_ConfigureVertexAttributes();
+}
 
-    out vec2 vTexCoord;
+void LifeRenderer::initialise_LoadShader()
+{
+  _shader = ShaderLoader::LoadShader(
+    openGLContext,
+    Constants::VertShaderLocation,
+    Constants::FragShaderLocation);
+}
 
-    void main()
-    {
-      gl_Position = vec4(position, 0.0, 1.0);
-      vTexCoord = texCoord;
-    }
-  )";
-
-  const char* fragmentShader = R"(
-  #version 330 core
-  in vec2 vTexCoord;
-  out vec4 fragColor;
-
-  uniform sampler2D lifeTexture;
-  uniform vec2 texelSize; // = 1.0 / texture resolution passed from C++
-
-  void main()
-  {
-    float glow = 0.0;
-    float radius = 3.0; // in texels
-
-    // Sample a 7x7 neighborhood for smoother glow
-    for (int x = -3; x <= 3; ++x)
-    {
-      for (int y = -3; y <= 3; ++y)
-      {
-        vec2 offset = vec2(float(x), float(y)) * texelSize;
-        vec2 sampleUV = clamp(vTexCoord + offset, vec2(0.0), vec2(1.0));
-        float neighborAlive = texture(lifeTexture, sampleUV).r;
-
-        float dist = length(offset);
-        float weight = neighborAlive / max(dist, 0.001);
-        glow += weight;
-      }
-    }
-
-    float threshold = 1.5;
-
-    if (glow < threshold)
-      discard;
-
-    fragColor = vec4(mix(vec3(0.0, 0.2, 0.8), vec3(1.0), clamp(glow / (threshold * 3.0), 0.0, 1.0)), 1.0);
-  }
-)";
-
-  _shader = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
-  if (!_shader->addVertexShader(juce::CharPointer_UTF8(vertexShader)) ||
-      !_shader->addFragmentShader(juce::CharPointer_UTF8(fragmentShader)) ||
-      !_shader->link())
-  {
-    DBG("Shader error: " + _shader->getLastError());
-    jassertfalse;
-  }
-
+void LifeRenderer::initialise_SetupQuadVertexData()
+{
   float quadVertices[] = {
-  // posX,  posY, u,    v
-    -1.0f,  1.0f, 0.0f, 1.0f, // top-left
-    -1.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-     1.0f, -1.0f, 1.0f, 0.0f, // bottom-right
+      -1.0f,  1.0f, 0.0f, 1.0f,
+      -1.0f, -1.0f, 0.0f, 0.0f,
+       1.0f, -1.0f, 1.0f, 0.0f,
 
-    -1.0f,  1.0f, 0.0f, 1.0f, // top-left
-     1.0f, -1.0f, 1.0f, 0.0f, // bottom-right
-     1.0f,  1.0f, 1.0f, 1.0f  // top-right
+      -1.0f,  1.0f, 0.0f, 1.0f,
+       1.0f, -1.0f, 1.0f, 0.0f,
+       1.0f,  1.0f, 1.0f, 1.0f
   };
 
-  // Setup full-screen quad
   glGenVertexArrays(1, &_quadVertexArray);
   glBindVertexArray(_quadVertexArray);
 
   glGenBuffers(1, &_quadVertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, _quadVertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+}
 
+void LifeRenderer::initialise_ConfigureVertexAttributes()
+{
+  // Attribute 0: position (vec2)
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
+  // Attribute 1: texture coordinates (vec2)
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
+  // Unbind VAO to prevent accidental modification
   glBindVertexArray(0);
 }
 
@@ -135,41 +95,53 @@ void LifeRenderer::shutdown()
 
 void LifeRenderer::render()
 {
+  render_SetupViewportAndClear();
+  if (!_shader) return;
+
+  render_UpdateTextureIfReady();
+  render_UseShaderAndBindTexture();
+  render_DrawQuad();
+
+}
+
+void LifeRenderer::render_SetupViewportAndClear()
+{
   const int w = getWidth();
   const int h = getHeight();
 
   glViewport(0, 0, w, h);
   glClearColor(0, 0, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT);
+}
 
-  if (!_shader)
-    return;
+void LifeRenderer::render_UpdateTextureIfReady()
+{
+  std::lock_guard<std::mutex> lock(_dataMutex);
 
+  if (_isDataReady)
   {
-    std::lock_guard<std::mutex> lock(_dataMutex);
+    std::vector<uint8_t> pixelData = FlattenRenderDataToPixels();
 
-    if (_isDataReady)
-    {
-      std::vector<uint8_t> pixelData = FlattenRenderDataToPixels();
+    if (_lifeTexture == 0)
+      glGenTextures(1, &_lifeTexture);
 
-      if (_lifeTexture == 0)
-        glGenTextures(1, &_lifeTexture);
+    glBindTexture(GL_TEXTURE_2D, _lifeTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8,
+      _renderWidth, _renderHeight,
+      0, GL_RG, GL_UNSIGNED_BYTE,
+      pixelData.data());
 
-      glBindTexture(GL_TEXTURE_2D, _lifeTexture);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8,
-        _renderWidth, _renderHeight,
-        0, GL_RG, GL_UNSIGNED_BYTE,
-        pixelData.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-      _isDataReady = false;
-    }
+    _isDataReady = false;
   }
+}
 
+void LifeRenderer::render_UseShaderAndBindTexture()
+{
   _shader->use();
 
   if (_lifeTexture != 0)
@@ -178,7 +150,10 @@ void LifeRenderer::render()
     glBindTexture(GL_TEXTURE_2D, _lifeTexture);
     _shader->setUniform("lifeTexture", 0);
   }
+}
 
+void LifeRenderer::render_DrawQuad()
+{
   glBindVertexArray(_quadVertexArray);
   glDrawArrays(GL_TRIANGLES, 0, 6);
   glBindVertexArray(0);
@@ -188,9 +163,8 @@ void LifeRenderer::SetLifeData(const std::vector<std::vector<Cell>>& data, int w
 {
   std::lock_guard<std::mutex> lock(_dataMutex);
 
-  _renderWidth = width;
+  _renderWidth  = width;
   _renderHeight = height;
-
   _renderData.clear();
   _renderData.resize(height, std::vector<CellRenderData>(width));
 
@@ -202,9 +176,8 @@ void LifeRenderer::SetLifeData(const std::vector<std::vector<Cell>>& data, int w
       const Cell& src = data[x][y];
 
       CellRenderData dest;
-      dest.alive = src.alive;
-      dest.age = src.age;
-
+      dest.alive        = src.alive;
+      dest.age          = src.age;
       _renderData[y][x] = dest;
     }
   }
@@ -212,53 +185,8 @@ void LifeRenderer::SetLifeData(const std::vector<std::vector<Cell>>& data, int w
   _isDataReady = true;
 }
 
-//void LifeRenderer::SetLifeData(const std::vector<std::vector<Cell>>& data, int width, int height)
-//{
-//  std::lock_guard<std::mutex> lock(_dataMutex);
-//
-//  _renderWidth = width;
-//  _renderHeight = height;
-//
-//  // Clear and prepare render buffer
-//  _renderData.clear();
-//  _renderData.resize(height, std::vector<CellRenderData>(width));
-//
-//  // Validate and transform each row
-//  for (int y = 0; y < height; ++y)
-//  {
-//    if (y >= static_cast<int>(data.size()))
-//    {
-//      DBG("SetLifeData: WARNING - input has fewer rows than expected height (" +
-//        juce::String(height) + ")");
-//      break;
-//    }
-//
-//    const auto& simRow = data[y];
-//
-//    if (static_cast<int>(simRow.size()) != width)
-//    {
-//      DBG("SetLifeData: WARNING - row " + juce::String(y) + " has " +
-//        juce::String(simRow.size()) + " columns, expected " + juce::String(width));
-//    }
-//
-//    for (int x = 0; x < width; ++x)
-//    {
-//      if (x >= static_cast<int>(simRow.size()))
-//        continue;
-//
-//      const Cell& src = simRow[x];
-//      CellRenderData dest;
-//      dest.alive = src.alive;
-//      dest.age = src.age;
-//
-//      _renderData[y][x] = dest;
-//    }
-//  }
-//
-//  _isDataReady = true;
-//}
-
-// testo
+// render test 
+// comment out the above setLifeData to check bounds and rendering direction
 //void LifeRenderer::SetLifeData(const std::vector<std::vector<Cell>>& data, int width, int height)
 //{
 //  std::lock_guard<std::mutex> lock(_dataMutex);
@@ -315,15 +243,27 @@ void LifeRenderer::SetLifeData(const std::vector<std::vector<Cell>>& data, int w
 std::vector<uint8_t> LifeRenderer::FlattenRenderDataToPixels()
 {
   std::vector<uint8_t> pixels;
+
+  // Preallocate memory to avoid reallocations during pixel push_back.
+  // Each cell contributes 2 bytes: one for 'alive' status (R), one for 'age' (G).
   pixels.reserve(_renderWidth * _renderHeight * 2); // RG format
 
-  for (int y = _renderHeight - 1; y >= 0; --y)  // FLIP VERTICALLY HERE
+  // Iterate from bottom to top to vertically flip the image.
+  // This is necessary because OpenGL's origin is bottom-left,
+  // while many image formats expect top-left origin.
+  for (int y = _renderHeight - 1; y >= 0; --y)
   {
     for (int x = 0; x < _renderWidth; ++x)
     {
       const CellRenderData& cell = _renderData[y][x];
-      pixels.push_back(cell.alive ? 255 : 0); // R channel
-      pixels.push_back(static_cast<uint8_t>(cell.age)); // G channel
+
+      // Encode 'alive' status into the red channel.
+      // We use 255 for alive and 0 for dead to maximize contrast.
+      pixels.push_back(cell.alive ? 255 : 0);
+
+      // Encode 'age' into the green channel.
+      // This allows us to visualize aging cells with varying intensity.
+      pixels.push_back(static_cast<uint8_t>(cell.age));
     }
   }
 
