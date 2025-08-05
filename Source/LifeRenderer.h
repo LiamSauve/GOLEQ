@@ -4,6 +4,12 @@
 #include "Cell.h"
 #include <mutex>
 
+struct CellRenderData
+{
+  bool alive;
+  uint8_t age;
+};
+
 class LifeRenderer : public juce::OpenGLAppComponent
 {
 public:
@@ -16,7 +22,8 @@ public:
   void shutdown() override;
   void render() override;
 
-  void SetLifeData(const std::vector<CellRenderData>& data, int width, int height);
+  void SetLifeData(const std::vector<std::vector<Cell>>& data, int width, int height);
+  std::vector<uint8_t> FlattenRenderDataToPixels();
 
 private:
   std::unique_ptr<juce::OpenGLShaderProgram> _shader;
@@ -24,11 +31,11 @@ private:
   GLuint _quadVertexArray = 0;
   GLuint _quadVertexBuffer = 0;
 
-  std::vector<CellRenderData> _pendingData;
-  int _pendingWidth = 0;
-  int _pendingHeight = 0;
-  bool _isDataReady = false;
   std::mutex _dataMutex;
+  std::vector < std::vector<CellRenderData>> _renderData;
+  int _renderWidth;
+  int _renderHeight;
+  bool _isDataReady;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LifeRenderer)
 };

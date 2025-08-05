@@ -30,9 +30,10 @@ public:
   Cell GetCell(int x, int y) const override;
   int GetWidth() const override;
   int GetHeight() const override;
+
   void SetSize(int newWidth, int newHeight);
   void SetCAVariant(CAVariant caVariant);
-  std::vector<CellRenderData> GetRenderData() const;
+  std::vector<std::vector<Cell>> GetCurrentGen() const;
 
 private:
   int CountLiveNeighbours(int x, int y) const;

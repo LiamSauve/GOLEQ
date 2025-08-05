@@ -190,10 +190,10 @@ juce::Point<int> LifeGridComponent::GetGridCoordsFromMouse(const juce::MouseEven
 
 void LifeGridComponent::Render()
 {
-  UpdateLifeData(_life.GetRenderData(), _life.GetWidth(), _life.GetHeight());
+  UpdateLifeData(_life.GetCurrentGen(), _life.GetWidth(), _life.GetHeight());
 }
 
-void LifeGridComponent::UpdateLifeData(const std::vector<CellRenderData>& data, int width, int height)
+void LifeGridComponent::UpdateLifeData(const std::vector<std::vector<Cell>>& data, int width, int height)
 {
   _renderer.SetLifeData(data, width, height);
 }

@@ -487,23 +487,62 @@ void Life::SetCAVariant(CAVariant caVariant)
   _caVariant = caVariant;
 }
 
-std::vector<CellRenderData> Life::GetRenderData() const
+std::vector<std::vector<Cell>> Life::GetCurrentGen() const
 {
-  std::vector<CellRenderData> data;
-  data.reserve(_currentGen.size() * _currentGen[0].size());
-
-  for (const auto& row : _currentGen)
-  {
-    for (const auto& cell : row)
-    {
-      CellRenderData renderCell;
-      renderCell.alive = cell.alive;
-      renderCell.age = cell.age;
-      data.push_back(renderCell);
-    }
-  }
-  return data;
+  return _currentGen;
 }
+
+//std::vector<std::vector<CellRenderData>> Life::GetRenderData() const
+//{
+//  // Sanity check: Make sure _currentGen is not empty
+//  if (_currentGen.empty() || _currentGen[0].empty())
+//  {
+//    DBG("GetRenderData: WARNING - _currentGen is empty or malformed");
+//    return {};
+//  }
+//
+//  const size_t numRows = _currentGen.size();
+//  const size_t numCols = _currentGen[0].size();
+//
+//  // Declare output container with reserved size
+//  std::vector<std::vector<CellRenderData>> renderData;
+//  renderData.reserve(numRows);
+//
+//  for (size_t rowIndex = 0; rowIndex < numRows; ++rowIndex)
+//  {
+//    const std::vector<Cell>& simRow = _currentGen[rowIndex];
+//
+//    // Validate each row is consistently sized
+//    if (simRow.size() != numCols)
+//    {
+//      DBG("GetRenderData: ERROR - Row " + juce::String(rowIndex) +
+//        " has inconsistent column count: " + juce::String(simRow.size()));
+//      jassertfalse; // This indicates a logic error in simulation layout
+//    }
+//
+//    std::vector<CellRenderData> renderRow;
+//    renderRow.reserve(numCols);
+//
+//    for (size_t colIndex = 0; colIndex < numCols; ++colIndex)
+//    {
+//      const Cell& cell = simRow[colIndex];
+//
+//      CellRenderData renderCell;
+//      renderCell.alive = (bool)cell.alive;
+//      renderCell.age = (uint8_t)cell.age;
+//
+//      renderRow.push_back(renderCell);
+//    }
+//
+//    renderData.push_back(std::move(renderRow));
+//  }
+//
+//  DBG("GetRenderData: OK - " + juce::String(numRows) + " rows, " +
+//    juce::String(numCols) + " cols");
+//
+//  return renderData;
+//}
+
 
 int Life::CountLiveNeighbours(int x, int y) const
 {

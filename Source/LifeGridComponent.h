@@ -29,7 +29,7 @@ public:
   juce::Point<int> GetGridCoordsFromMouse(const juce::MouseEvent& event);
 
   void Render();
-  void UpdateLifeData(const std::vector<CellRenderData>& data, int width, int height);
+  void UpdateLifeData(const std::vector<std::vector<Cell>>& data, int width, int height);
 
 private:
   Life _life;
