@@ -7,10 +7,6 @@
       <FILE id="STeBLA" name="ShaderLoader.h" compile="0" resource="0" file="Source/ShaderLoader.h"/>
       <FILE id="NENdNa" name="ShaderLoader.cpp" compile="1" resource="0"
             file="Source/ShaderLoader.cpp"/>
-      <GROUP id="{E3F8597A-F227-FECA-DF8F-7C11D4F7D92F}" name="shaders">
-        <FILE id="jArirG" name="life.frag.glsl" compile="0" resource="1" file="Source/shaders/life.frag.glsl"/>
-        <FILE id="OQ5tUu" name="life.vert.glsl" compile="0" resource="1" file="Source/shaders/life.vert.glsl"/>
-      </GROUP>
       <FILE id="eLUlwe" name="LifeRenderer.h" compile="0" resource="0" file="Source/LifeRenderer.h"/>
       <FILE id="ENbECW" name="LifeRenderer.cpp" compile="1" resource="0"
             file="Source/LifeRenderer.cpp"/>
@@ -34,6 +30,12 @@
       <FILE id="jaDKzF" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="STPF5C" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <GROUP id="{B0558126-8855-D555-3737-C2636BCB9A63}" name="Resource">
+      <GROUP id="{143D1C07-619E-C963-188E-FFF441DC380A}" name="shaders">
+        <FILE id="xmCPWb" name="life.frag.glsl" compile="0" resource="1" file="Resource/shaders/life.frag.glsl"/>
+        <FILE id="ssOQF6" name="life.vert.glsl" compile="0" resource="1" file="Resource/shaders/life.vert.glsl"/>
+      </GROUP>
     </GROUP>
   </MAINGROUP>
   <MODULES>

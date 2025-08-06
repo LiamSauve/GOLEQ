@@ -180,6 +180,9 @@ void Life::Update()
   case CAVariant::OrganicLife:
     Update_OrganicLife();
     break;
+  case CAVariant::Testerino:
+    Update_Testerino();
+    break;
   default:
     Update_Conway();
     break;
@@ -373,6 +376,81 @@ void Life::Update_OrganicLife()
   std::swap(_currentGen, _nextGen);
 }
 
+void Life::Update_Testerino()
+{
+  _tick++;
+
+  const float waveSpeed = 0.05f;
+  const float waveAmplitude = 2.0f;
+  const float baseRadius = 1.5f;
+
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      // Create a wave distortion based on position and time
+      float waveOffset = sin((x + _tick) * waveSpeed) + cos((y - _tick) * waveSpeed);
+      float radius = baseRadius + waveAmplitude * waveOffset;
+
+      // Angle based on position and time
+      float angle = (_tick + x * 3 + y * 2) * 3.14159f / 180.0f;
+
+      int dx = int(cos(angle) * radius);
+      int dy = int(sin(angle) * radius);
+
+      int srcX = (x + dx + _gridWidth) % _gridWidth;
+      int srcY = (y + dy + _gridHeight) % _gridHeight;
+
+      _nextGen[x][y] = _currentGen[srcX][srcY];
+
+      // Optional: fade cells over time for trailing effect
+      if (_nextGen[x][y].alive == 1)
+        _nextGen[x][y].age = std::min(_nextGen[x][y].age + 1, 255);
+    }
+  }
+
+  std::swap(_currentGen, _nextGen);
+
+
+
+
+  //_tick++;
+  //
+  //const float waveSpeed = 0.05f;
+  //const float waveAmplitude = 2.0f;
+  //const float baseRadius = 1.5f;
+  //
+  //for (int x = 0; x < _gridWidth; ++x)
+  //{
+  //  for (int y = 0; y < _gridHeight; ++y)
+  //  {
+  //    // Create a wave distortion based on position and time
+  //    float waveOffset = sin((x + _tick) * waveSpeed) + cos((y - _tick) * waveSpeed);
+  //    float radius = baseRadius + waveAmplitude * waveOffset;
+  //
+  //    // Angle based on position and time
+  //    float angle = (_tick + x * 3 + y * 2) * 3.14159f / 180.0f;
+  //
+  //    int dx = int(cos(angle) * radius);
+  //    int dy = int(sin(angle) * radius);
+  //
+  //    int srcX = (x + dx + _gridWidth) % _gridWidth;
+  //    int srcY = (y + dy + _gridHeight) % _gridHeight;
+  //
+  //    _nextGen[x][y] = _currentGen[srcX][srcY];
+  //
+  //    // Optional: fade cells over time for trailing effect
+  //    if (_nextGen[x][y].alive == 1)
+  //    {
+  //      _nextGen[x][y].age = std::min(_nextGen[x][y].age + 1, 255);
+  //    }
+  //  }
+  //}
+  //
+  //std::swap(_currentGen, _nextGen);
+
+}
+
 void Life::ToggleCell(int x, int y)
 {
   _currentGen[x][y].alive = (_currentGen[x][y].alive == 0) ? 1 : 0;
@@ -501,7 +579,9 @@ int Life::CountLiveNeighbours(int x, int y) const
     for (int dy = -1; dy <= 1; ++dy)
     {
       if (dx == 0 && dy == 0)
+      {
         continue;
+      }
 
       const int neighbourX = x + dx;
       const int neighbourY = y + dy;

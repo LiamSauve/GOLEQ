@@ -30,9 +30,9 @@ void GOLEQAudioProcessorEditor::paint(juce::Graphics& g)
 
 void GOLEQAudioProcessorEditor::resized()
 {
-  auto bounds = getLocalBounds();
-  auto simHeight = bounds.getHeight() * 2 / 3;
-  auto simBounds = bounds.removeFromTop(simHeight);
+  auto bounds             = getLocalBounds();
+  auto simHeight          = bounds.getHeight() * 2 / 3;
+  auto simBounds          = bounds.removeFromTop(simHeight);
   auto controlPanelBounds = bounds;
 
   _lifeGridComponent.setBounds(simBounds);

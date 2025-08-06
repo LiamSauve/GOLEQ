@@ -249,7 +249,7 @@ std::vector<uint8_t> LifeRenderer::FlattenRenderDataToPixels()
   pixels.reserve(_renderWidth * _renderHeight * 2); // RG format
 
   // Iterate from bottom to top to vertically flip the image.
-  // This is necessary because OpenGL's origin is bottom-left,
+  // Necessary because OpenGL's origin is bottom-left,
   // while many image formats expect top-left origin.
   for (int y = _renderHeight - 1; y >= 0; --y)
   {
@@ -257,12 +257,7 @@ std::vector<uint8_t> LifeRenderer::FlattenRenderDataToPixels()
     {
       const CellRenderData& cell = _renderData[y][x];
 
-      // Encode 'alive' status into the red channel.
-      // We use 255 for alive and 0 for dead to maximize contrast.
       pixels.push_back(cell.alive ? 255 : 0);
-
-      // Encode 'age' into the green channel.
-      // This allows us to visualize aging cells with varying intensity.
       pixels.push_back(static_cast<uint8_t>(cell.age));
     }
   }

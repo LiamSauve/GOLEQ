@@ -25,6 +25,7 @@ public:
   void Update_Maze();
   void Update_DataMosh();
   void Update_OrganicLife();
+  void Update_Testerino();
   void ToggleCell(int x, int y);
   int GetActiveLiveCellCount() const override;
   Cell GetCell(int x, int y) const override;
@@ -45,4 +46,5 @@ private:
   std::vector<std::vector<Cell>> _currentGen;
   std::vector<std::vector<Cell>> _nextGen;
   CAVariant _caVariant;
+  int _tick = 0;
 };

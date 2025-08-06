@@ -75,8 +75,8 @@ void ControlPanelComponent::resized()
   bottomRow.items.add(juce::FlexItem(_randomizeButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
   bottomRow.items.add(juce::FlexItem(_randomizeMeaningfullyButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
   bottomRow.items.add(juce::FlexItem(_nextGenerationButton).withMinHeight(Constants::ControlHeight).withMinWidth(Constants::ButtonWidth));
-  //bottomRow.items.add(juce::FlexItem(_widthSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
-  //bottomRow.items.add(juce::FlexItem(_heightSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
+  bottomRow.items.add(juce::FlexItem(_widthSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
+  bottomRow.items.add(juce::FlexItem(_heightSlider).withMinHeight(knobHeight).withMinWidth(Constants::ControlMinWidth));
 
   topRow.performLayout(topArea);
   bottomRow.performLayout(bottomArea);
@@ -90,15 +90,15 @@ void ControlPanelComponent::InitializeControls()
   _timeSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
   _timeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, Constants::TextBoxWidth, Constants::TextBoxHeight);
 
-  //_widthSlider.setRange(UIConstants::SimWidthMin, UIConstants::SimWidthMax, UIConstants::SimSizeSliderInterval);
-  //_widthSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-  //_widthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
-  //_widthSlider.setValue(UIConstants::SimWidthMax, juce::NotificationType::dontSendNotification);
-  //
-  //_heightSlider.setRange(UIConstants::SimHeightMin, UIConstants::SimHeightMax, UIConstants::SimSizeSliderInterval);
-  //_heightSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-  //_heightSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, UIConstants::TextBoxWidth, UIConstants::TextBoxHeight);
-  //_heightSlider.setValue(UIConstants::SimHeightMax, juce::NotificationType::dontSendNotification);
+  _widthSlider.setRange(Constants::SimWidthMin, Constants::SimWidthMax, Constants::SimSizeSliderInterval);
+  _widthSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+  _widthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, Constants::TextBoxWidth, Constants::TextBoxHeight);
+  _widthSlider.setValue(Constants::SimWidthMax, juce::NotificationType::dontSendNotification);
+
+  _heightSlider.setRange(Constants::SimHeightMin, Constants::SimHeightMax, Constants::SimSizeSliderInterval);
+  _heightSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+  _heightSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, Constants::TextBoxWidth, Constants::TextBoxHeight);
+  _heightSlider.setValue(Constants::SimHeightMax, juce::NotificationType::dontSendNotification);
 
   _caVariantDropdown.addItem(Constants::CA_Conway_Label, CAVariant::Conway);
   _caVariantDropdown.addItem(Constants::CA_HighLife_Label, CAVariant::HighLife);
@@ -106,6 +106,7 @@ void ControlPanelComponent::InitializeControls()
   _caVariantDropdown.addItem(Constants::CA_Maze_Label, CAVariant::Maze);
   _caVariantDropdown.addItem(Constants::CA_DataMosh_Label, CAVariant::DataMosh);
   _caVariantDropdown.addItem(Constants::CA_OrganicLife_Label, CAVariant::OrganicLife);
+  _caVariantDropdown.addItem(Constants::CA_Testerino, CAVariant::Testerino);
   _caVariantDropdown.setSelectedId(CAVariant::Conway);
 
   _effectDropdown.addItem(Constants::Effect_EQ_Label, EffectType::EQ);
@@ -126,6 +127,6 @@ void ControlPanelComponent::InitializeControls()
   addAndMakeVisible(_randomizeButton);
   addAndMakeVisible(_randomizeMeaningfullyButton);
   addAndMakeVisible(_nextGenerationButton);
-  //addAndMakeVisible(_widthSlider);
-  //addAndMakeVisible(_heightSlider);
+  addAndMakeVisible(_widthSlider);
+  addAndMakeVisible(_heightSlider);
 }

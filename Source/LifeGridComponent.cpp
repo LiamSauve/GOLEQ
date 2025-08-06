@@ -47,7 +47,6 @@ void LifeGridComponent::SetCellPaintSize(int width, int height)
 void LifeGridComponent::SetGridSize(int width, int height)
 {
   _life.SetSize(width, height);
-  //setCellPaintSize(width, height);
 }
 
 void LifeGridComponent::Randomize()

@@ -27,6 +27,7 @@ namespace Constants
   static constexpr auto CA_Maze_Label = "Maze";
   static constexpr auto CA_DataMosh_Label = "DataMosh";
   static constexpr auto CA_OrganicLife_Label = "OrganicLife";
+  static constexpr auto CA_Testerino = "Testerino";
 
   // Control Panel: Audio Effect Labels
   static constexpr auto Effect_EQ_Label = "EQ Sweep";
@@ -40,9 +41,9 @@ namespace Constants
 
   // Control Panel: Simulation Size Sliders
   static constexpr int SimWidthMin = 32;
-  static constexpr int SimWidthMax = 1280;
+  static constexpr int SimWidthMax = 640;
   static constexpr int SimHeightMin = 18;
-  static constexpr int SimHeightMax = 720;
+  static constexpr int SimHeightMax = 360;
   static constexpr int SimSizeSliderInterval = 1;
 
   // Control Panel: Layout Dimensions & Styling
@@ -57,8 +58,9 @@ namespace Constants
   static constexpr int TextBoxHeight = 20;
   static const juce::Colour ControlPanelBackground{ 35, 35, 45 };
 
-  static const juce::String VertShaderLocation = "path/to/vertex.glsl";
-  static const juce::String FragShaderLocation = "path/to/fragment.glsl";
+  static const juce::String ShaderPathPrefix = "../../Resource/shaders/";
+  static const juce::String VertShaderLocation = ShaderPathPrefix + "life.vert.glsl";
+  static const juce::String FragShaderLocation = ShaderPathPrefix + "life.frag.glsl";
 }
 
 enum CAVariant
@@ -68,7 +70,8 @@ enum CAVariant
   Seeds,
   Maze,
   DataMosh,
-  OrganicLife
+  OrganicLife,
+  Testerino
 };
 
 enum EffectType
