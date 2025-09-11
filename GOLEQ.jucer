@@ -33,8 +33,16 @@
     </GROUP>
     <GROUP id="{B0558126-8855-D555-3737-C2636BCB9A63}" name="Resource">
       <GROUP id="{143D1C07-619E-C963-188E-FFF441DC380A}" name="shaders">
+        <FILE id="K7FZqw" name="funkylife.frag.glsl" compile="0" resource="1"
+              file="Resource/shaders/funkylife.frag.glsl"/>
+        <FILE id="TxKD24" name="funkylife.vert.glsl" compile="0" resource="1"
+              file="Resource/shaders/funkylife.vert.glsl"/>
         <FILE id="xmCPWb" name="life.frag.glsl" compile="0" resource="1" file="Resource/shaders/life.frag.glsl"/>
         <FILE id="ssOQF6" name="life.vert.glsl" compile="0" resource="1" file="Resource/shaders/life.vert.glsl"/>
+        <FILE id="tU95pT" name="neonlife.frag.glsl" compile="0" resource="1"
+              file="Resource/shaders/neonlife.frag.glsl"/>
+        <FILE id="y3Rl9r" name="neonlife.vert.glsl" compile="0" resource="1"
+              file="Resource/shaders/neonlife.vert.glsl"/>
       </GROUP>
     </GROUP>
   </MAINGROUP>

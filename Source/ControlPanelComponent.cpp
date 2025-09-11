@@ -107,6 +107,7 @@ void ControlPanelComponent::InitializeControls()
   _caVariantDropdown.addItem(Constants::CA_DataMosh_Label, CAVariant::DataMosh);
   _caVariantDropdown.addItem(Constants::CA_OrganicLife_Label, CAVariant::OrganicLife);
   _caVariantDropdown.addItem(Constants::CA_Testerino, CAVariant::Testerino);
+  _caVariantDropdown.addItem(Constants::CA_NeonFlow, CAVariant::NeonFlow);
   _caVariantDropdown.setSelectedId(CAVariant::Conway);
 
   _effectDropdown.addItem(Constants::Effect_EQ_Label, EffectType::EQ);

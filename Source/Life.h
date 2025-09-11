@@ -26,6 +26,7 @@ public:
   void Update_DataMosh();
   void Update_OrganicLife();
   void Update_Testerino();
+  void Update_NeonFlow();
   void ToggleCell(int x, int y);
   int GetActiveLiveCellCount() const override;
   Cell GetCell(int x, int y) const override;

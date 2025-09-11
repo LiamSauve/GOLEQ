@@ -183,6 +183,9 @@ void Life::Update()
   case CAVariant::Testerino:
     Update_Testerino();
     break;
+  case CAVariant::NeonFlow:
+    Update_NeonFlow();
+    break;
   default:
     Update_Conway();
     break;
@@ -449,6 +452,99 @@ void Life::Update_Testerino()
   //
   //std::swap(_currentGen, _nextGen);
 
+}
+
+void Life::Update_NeonFlow()
+{
+  _tick++;
+
+  // Flow field params (deterministic, wave-y like Testerino)
+  const float waveSpeed = 0.05f;
+  const float waveAmplitude = 2.0f;
+  const float baseRadius = 1.2f;
+
+  // Age dynamics
+  const int   ageGrowth = 10;  // per tick when alive
+  const int   ageDecay = 6;   // per tick when dead
+  const float kBleed = 0.20f; // fraction of neighbor avg age that bleeds in
+  const float kTrailAlive = 0.30f; // how much advected source age contributes when alive
+  const float kTrailDead = 0.15f; // trail contribution when dead
+  const int   energizeThr = 64;    // neighbors average age threshold for “energized” birth
+  const int   energizeBoost = 32;  // added age on energized birth
+
+  for (int x = 0; x < _gridWidth; ++x)
+  {
+    for (int y = 0; y < _gridHeight; ++y)
+    {
+      const Cell current = _currentGen[x][y];
+
+      // Conway base alive'
+      const int liveNeighbours = CountLiveNeighbours(x, y);
+      uint8_t alivePrime =
+        (current.alive == 1)
+        ? ((liveNeighbours == 2 || liveNeighbours == 3) ? 1 : 0)
+        : ((liveNeighbours == 3) ? 1 : 0);
+
+      // Neighbor age average (8-neighborhood)
+      int ageSum = 0;
+      for (int j = -1; j <= 1; ++j)
+        for (int i = -1; i <= 1; ++i)
+        {
+          if (i == 0 && j == 0) continue;
+          int nx = (x + i + _gridWidth) % _gridWidth;
+          int ny = (y + j + _gridHeight) % _gridHeight;
+          ageSum += _currentGen[nx][ny].age;
+        }
+      const int avgAge = ageSum / 8;
+
+      // Testerino-like deterministic drift (advection)
+      float waveOffset = std::sin((x + _tick) * waveSpeed) + std::cos((y - _tick) * waveSpeed);
+      float radius = baseRadius + waveAmplitude * waveOffset;
+      float angleDeg = (float)_tick + x * 3.0f + y * 2.0f;
+      float angleRad = angleDeg * 3.14159f / 180.0f;
+
+      int dx = (int)std::round(std::cos(angleRad) * radius);
+      int dy = (int)std::round(std::sin(angleRad) * radius);
+      int srcX = (x + dx + _gridWidth) % _gridWidth;
+      int srcY = (y + dy + _gridHeight) % _gridHeight;
+
+      const int srcAge = _currentGen[srcX][srcY].age;
+
+      // Compute next age with pump/decay + neighbor bleed + advected trail
+      int nextAge = (int)current.age;
+
+      if (alivePrime)
+      {
+        nextAge = nextAge + ageGrowth
+          + (int)std::round(kBleed * avgAge)
+          + (int)std::round(kTrailAlive * srcAge);
+      }
+      else
+      {
+        nextAge = nextAge - ageDecay
+          + (int)std::round(0.5f * kBleed * avgAge)
+          + (int)std::round(kTrailDead * srcAge);
+      }
+
+      // Energized births: if Conway would birth and neighbors are “old”, kick-start age
+      if (current.alive == 0 && liveNeighbours == 3 && avgAge >= energizeThr)
+      {
+        alivePrime = 1;
+        nextAge = std::max(nextAge + energizeBoost, 0);
+      }
+
+      // Clamp age to [0, 255]
+      nextAge = std::max(0, std::min(255, nextAge));
+
+      Cell next = current;
+      next.alive = alivePrime;
+      next.age = (uint8_t)nextAge;
+
+      _nextGen[x][y] = next;
+    }
+  }
+
+  std::swap(_currentGen, _nextGen);
 }
 
 void Life::ToggleCell(int x, int y)

@@ -36,8 +36,8 @@ void LifeRenderer::initialise_LoadShader()
 {
   _shader = ShaderLoader::LoadShader(
     openGLContext,
-    Constants::VertShaderLocation,
-    Constants::FragShaderLocation);
+    Constants::NeonVertShaderLocation,
+    Constants::NeonFragShaderLocation);
 }
 
 void LifeRenderer::initialise_SetupQuadVertexData()
@@ -101,7 +101,6 @@ void LifeRenderer::render()
   render_UpdateTextureIfReady();
   render_UseShaderAndBindTexture();
   render_DrawQuad();
-
 }
 
 void LifeRenderer::render_SetupViewportAndClear()
