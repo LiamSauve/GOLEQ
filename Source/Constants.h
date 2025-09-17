@@ -22,11 +22,8 @@ namespace Constants
 
   // Control Panel: Cellular Automaton Variants
   static constexpr auto CA_Conway_Label = "Conway's Life";
-  static constexpr auto CA_HighLife_Label = "HighLife";
   static constexpr auto CA_Seeds_Label = "Seeds";
   static constexpr auto CA_Maze_Label = "Maze";
-  static constexpr auto CA_DataMosh_Label = "DataMosh";
-  static constexpr auto CA_OrganicLife_Label = "OrganicLife";
   static constexpr auto CA_Testerino = "Testerino";
   static constexpr auto CA_NeonFlow = "Neon Flow";
 
@@ -71,11 +68,8 @@ namespace Constants
 enum CAVariant
 {
   Conway = 1,
-  HighLife,
   Seeds,
   Maze,
-  DataMosh,
-  OrganicLife,
   Testerino,
   NeonFlow
 };

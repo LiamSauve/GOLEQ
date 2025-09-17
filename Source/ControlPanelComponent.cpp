@@ -101,11 +101,8 @@ void ControlPanelComponent::InitializeControls()
   _heightSlider.setValue(Constants::SimHeightMax, juce::NotificationType::dontSendNotification);
 
   _caVariantDropdown.addItem(Constants::CA_Conway_Label, CAVariant::Conway);
-  _caVariantDropdown.addItem(Constants::CA_HighLife_Label, CAVariant::HighLife);
   _caVariantDropdown.addItem(Constants::CA_Seeds_Label, CAVariant::Seeds);
   _caVariantDropdown.addItem(Constants::CA_Maze_Label, CAVariant::Maze);
-  _caVariantDropdown.addItem(Constants::CA_DataMosh_Label, CAVariant::DataMosh);
-  _caVariantDropdown.addItem(Constants::CA_OrganicLife_Label, CAVariant::OrganicLife);
   _caVariantDropdown.addItem(Constants::CA_Testerino, CAVariant::Testerino);
   _caVariantDropdown.addItem(Constants::CA_NeonFlow, CAVariant::NeonFlow);
   _caVariantDropdown.setSelectedId(CAVariant::Conway);

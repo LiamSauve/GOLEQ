@@ -158,6 +158,66 @@ void Life::GenerateRingFormations()
   }
 }
 
+/* ============================================================
+   GOLEQ — Audio -> GOL Coupling  (v1, reference only)
+   Purpose: Define how smoothed audio bands drive the sim.
+   Implementation comes later; this block is the single source
+   of truth for names, ranges, and behavior.
+
+   Inputs (per tick, all 0..1 after smoothing):
+     B = Bass    ≈ 20–140 Hz
+     M = Mid     ≈ 140 Hz–2 kHz
+     H = High    ≈ 2–8 kHz
+     uAudio (optional UI/master level 0..1 for shaders)
+
+   Recommended smoothing (per-frame one-pole):
+     y += (x - y) * (x > y ? 0.35 : 0.08)
+
+   Knobs this mapping defines (to be set before the sim step):
+     ageGrowth   (int)   // +age per tick when alive
+     ageDecay    (int)   // −age per tick when dead
+     kBleed      (0..1)  // neighbor age diffusion amount
+     waveAmp     (float) // flow amplitude for drift field
+     waveSpd     (float) // flow speed for drift field
+     pSeed       (0..1)  // per-cell probability of bass seeding
+     seedAgeBase (0..255)// newborn base age
+     seedAgeBoost(0..255)// extra age scaled by H
+
+   Mapping (defaults chosen for lively but stable feel):
+     ageGrowth = 6  + 12 * M
+     ageDecay  = 4  +  2 * (1 - M)
+     kBleed    = 0.12 + 0.25 * H
+
+     bm        = 0.6 * B + 0.4 * M
+     waveAmp   = 1.8  + 3.0  * bm
+     waveSpd   = 0.045 + 0.06 * bm
+
+     pSeed     = 0.0005 + 0.02 * B
+     newbornAge = seedAgeBase + seedAgeBoost * H
+     (defaults: seedAgeBase=16, seedAgeBoost=96)
+
+   Seeding step (optional, run BEFORE Conway rules):
+     For each dead cell:
+       if rand01(x,y,tick) < pSeed:
+         alive = 1; age = clamp(newbornAge, 0, 255)
+
+   Expected visual behavior (for neon shader):
+     • Bass → more seeds & stronger flow (filaments move on kicks)
+     • Mids → shapes retain heat (age ramps persist)
+     • Highs → finer shimmer via kBleed; newborns start brighter
+
+   TODO (implementation hooks):
+     [ ] Compute B/M/H (band-averaged magnitudes → 0..1)
+     [ ] Smooth bands each frame
+     [ ] Write knobs from formulas above
+     [ ] Optional: run seeding pass using pSeed/newbornAge
+     [ ] Run Update_Conway / Update_NeonFlow using those knobs
+
+   Versioning:
+     v1 — initial spec; tune constants here and keep this block
+           as the canonical reference.
+   ============================================================ */
+
 void Life::Update()
 {
   switch (_caVariant)
@@ -165,20 +225,11 @@ void Life::Update()
   case CAVariant::Conway:
     Update_Conway();
     break;
-  case CAVariant::HighLife:
-    Update_Highlife();
-    break;
   case CAVariant::Seeds:
     Update_Seeds();
     break;
   case CAVariant::Maze:
     Update_Maze();
-    break;
-  case CAVariant::DataMosh:
-    Update_DataMosh();
-    break;
-  case CAVariant::OrganicLife:
-    Update_OrganicLife();
     break;
   case CAVariant::Testerino:
     Update_Testerino();
@@ -413,45 +464,6 @@ void Life::Update_Testerino()
   }
 
   std::swap(_currentGen, _nextGen);
-
-
-
-
-  //_tick++;
-  //
-  //const float waveSpeed = 0.05f;
-  //const float waveAmplitude = 2.0f;
-  //const float baseRadius = 1.5f;
-  //
-  //for (int x = 0; x < _gridWidth; ++x)
-  //{
-  //  for (int y = 0; y < _gridHeight; ++y)
-  //  {
-  //    // Create a wave distortion based on position and time
-  //    float waveOffset = sin((x + _tick) * waveSpeed) + cos((y - _tick) * waveSpeed);
-  //    float radius = baseRadius + waveAmplitude * waveOffset;
-  //
-  //    // Angle based on position and time
-  //    float angle = (_tick + x * 3 + y * 2) * 3.14159f / 180.0f;
-  //
-  //    int dx = int(cos(angle) * radius);
-  //    int dy = int(sin(angle) * radius);
-  //
-  //    int srcX = (x + dx + _gridWidth) % _gridWidth;
-  //    int srcY = (y + dy + _gridHeight) % _gridHeight;
-  //
-  //    _nextGen[x][y] = _currentGen[srcX][srcY];
-  //
-  //    // Optional: fade cells over time for trailing effect
-  //    if (_nextGen[x][y].alive == 1)
-  //    {
-  //      _nextGen[x][y].age = std::min(_nextGen[x][y].age + 1, 255);
-  //    }
-  //  }
-  //}
-  //
-  //std::swap(_currentGen, _nextGen);
-
 }
 
 void Life::Update_NeonFlow()
@@ -478,7 +490,7 @@ void Life::Update_NeonFlow()
     {
       const Cell current = _currentGen[x][y];
 
-      // Conway base alive'
+      // Conway base alive
       const int liveNeighbours = CountLiveNeighbours(x, y);
       uint8_t alivePrime =
         (current.alive == 1)
@@ -488,13 +500,18 @@ void Life::Update_NeonFlow()
       // Neighbor age average (8-neighborhood)
       int ageSum = 0;
       for (int j = -1; j <= 1; ++j)
+      {
         for (int i = -1; i <= 1; ++i)
         {
-          if (i == 0 && j == 0) continue;
+          if (i == 0 && j == 0)
+          {
+            continue;
+          }
           int nx = (x + i + _gridWidth) % _gridWidth;
           int ny = (y + j + _gridHeight) % _gridHeight;
           ageSum += _currentGen[nx][ny].age;
         }
+      }
       const int avgAge = ageSum / 8;
 
       // Testerino-like deterministic drift (advection)
