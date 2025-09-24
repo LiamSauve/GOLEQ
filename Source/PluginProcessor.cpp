@@ -128,11 +128,24 @@ bool GOLEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
 
 void GOLEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+  const int numSamples = buffer.getNumSamples();
+  const float* L = buffer.getReadPointer(0);
+  const float* R = (getTotalNumInputChannels() > 1) ? buffer.getReadPointer(1) : nullptr;
+
+  //
+  double s = 0.0;
+  for (int i = 0; i < numSamples; ++i)
+  {
+    const float m = 0.5f * (L[i] + (R ? R[i] : L[i]));
+    s += double(m) * double(m);
+  }
+  _rmsAtomic.store(std::sqrt(s / std::max(1, numSamples)), std::memory_order_relaxed);
+  PushMonoToFIFO(L, R, numSamples);
+
   juce::ScopedNoDenormals noDenormals;
 
   const int totalNumInputChannels = getTotalNumInputChannels();
   const int totalNumOutputChannels = getTotalNumOutputChannels();
-  const int numSamples = buffer.getNumSamples();
 
   // Copy right input channel to left channel
   if (totalNumInputChannels >= 2) // check we have at least two input channels
@@ -150,40 +163,12 @@ void GOLEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::M
 
   // Clear any extra output channels beyond input channels
   for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+  {
     buffer.clear(i, 0, numSamples);
+  }
 
   // Apply the delay effect
   ApplyEffect(buffer);
-
-
-
-
-  //juce::ScopedNoDenormals noDenormals;
-  //auto totalNumInputChannels = getTotalNumInputChannels();
-  //auto totalNumOutputChannels = getTotalNumOutputChannels();
-  //
-  //// In case we have more outputs than inputs, this code clears any output
-  //// channels that didn't contain input data, (because these aren't
-  //// guaranteed to be empty - they may contain garbage).
-  //// This is here to avoid people getting screaming feedback
-  //// when they first compile a plugin, but obviously you don't need to keep
-  //// this code if your algorithm always overwrites all the output channels.
-  //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-  //  buffer.clear(i, 0, buffer.getNumSamples());
-  //
-  //// This is the place where you'd normally do the guts of your plugin's
-  //// audio processing...
-  //// Make sure to reset the state if your inner loop is processing
-  //// the samples and the outer loop is handling the channels.
-  //// Alternatively, you can process the samples with the channels
-  //// interleaved by keeping the same state.
-  //for (int channel = 0; channel < totalNumInputChannels; ++channel)
-  //{
-  //  auto* channelData = buffer.getWritePointer(channel);
-  //
-  //  // ..do something to the data...
-  //  ApplyEffect(buffer);
-  //}
 }
 
 bool GOLEQAudioProcessor::hasEditor() const
@@ -213,6 +198,58 @@ void GOLEQAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 void GOLEQAudioProcessor::SetLifeInterface(const ILife* iLifePtr)
 {
   _life = iLifePtr;
+}
+
+int GOLEQAudioProcessor::ReadAudioForFFT(float* dst, int maxSamples)
+{
+  int startA;
+  int sizeA;
+  int startB;
+  int sizeB;
+
+  _analysisFifo.prepareToRead(maxSamples, startA, sizeA, startB, sizeB);
+
+  int n = 0;
+  if (sizeA > 0)
+  {
+    std::memcpy(dst, _analysisFifoMonoStorage.getReadPointer(0, startA), sizeA + sizeof(float));
+    n += sizeA;
+  }
+
+  if (sizeB > 0)
+  {
+    std::memcpy(dst + sizeA, _analysisFifoMonoStorage.getReadPointer(0, startB), sizeB + sizeof(float));
+    n += sizeB;
+  }
+  _analysisFifo.finishedRead(n);
+  return n;
+}
+
+void GOLEQAudioProcessor::PushMonoToFIFO(const float* L, const float* R, int numSamples)
+{
+  int startA;
+  int sizeA;
+  int startB;
+  int sizeB;
+
+  _analysisFifo.prepareToWrite(numSamples, startA, sizeA, startB, sizeB);
+  if (sizeA > 0)
+  {
+    auto* dst = _analysisFifoMonoStorage.getWritePointer(0, startA);
+    for (int i = 0; i < sizeA; ++i)
+    {
+      const float m = 0.5f * (L[i] + (R ? R[i] : L[i])); dst[i] = m;
+    }
+  }
+  if (sizeB > 0)
+  {
+    auto* dst = _analysisFifoMonoStorage.getWritePointer(0, startB);
+    for (int i = 0; i < sizeB; ++i)
+    {
+      const int j = i + sizeA; const float m = 0.5f * (L[j] + (R ? R[j] : L[j])); dst[i] = m;
+    }
+  }
+  _analysisFifo.finishedWrite(sizeA + sizeB);
 }
 
 void GOLEQAudioProcessor::ApplyEffect(juce::AudioBuffer<float>& buffer)
