@@ -63,6 +63,32 @@ namespace Constants
   static const juce::String FunkyVertShaderLocation   = ShaderPathPrefix + "funkylife.vert.glsl";
   static const juce::String NeonFragShaderLocation    = ShaderPathPrefix + "neonlife.frag.glsl";
   static const juce::String NeonVertShaderLocation    = ShaderPathPrefix + "neonlife.vert.glsl";
+
+  namespace Bands
+  {
+    inline constexpr float LowStartHz = 20.0f;
+    inline constexpr float LowEndHz = 140.0f;
+    inline constexpr float MidEndHz = 2000.0f;
+    inline constexpr float HighEndHz = 8000.0f;
+  }
+
+  // FFT config (shared across Processor and Editor)
+  inline constexpr int FFTOrder                    = 11;           // 2048-point FFT
+  inline constexpr int FFTSize                     = 1 << FFTOrder;
+  inline constexpr int AnalysisFifoCapacitySamples = FFTSize * 8; // 8 windows
+
+  namespace Smoothing
+  {
+    inline constexpr float Attack = 0.35f;
+    inline constexpr float Release = 0.08f;
+
+    inline float apply(float x, float y)
+    {
+      const float a = (x > y) ? Attack : Release;
+      return y + (x - y) * a;
+    }
+  }
+
 }
 
 enum CAVariant

@@ -5,15 +5,11 @@
 #include <juce_dsp/juce_dsp.h>
 
 #include "ILife.h"
+#include "Constants.h"
 
 class GOLEQAudioProcessor : public juce::AudioProcessor
 {
 public:
-  // Configuration // this is duplicate code, fix it
-  static constexpr int kFFTOrder                    = 11;             // 2048-point FFT
-  static constexpr int kFFTSize                     = 1 << kFFTOrder;
-  static constexpr int kAnalysisFifoCapacitySamples = kFFTSize * 8;   // 8 windows of headroom
-
   GOLEQAudioProcessor();
   ~GOLEQAudioProcessor() override;
 
@@ -63,8 +59,8 @@ private:
   const ILife* _life = nullptr;
 
   // Analysis
-  juce::AbstractFifo       _analysisFifo{ kAnalysisFifoCapacitySamples };
-  juce::AudioBuffer<float> _analysisFifoMonoStorage{ 1, kAnalysisFifoCapacitySamples };
+  juce::AbstractFifo       _analysisFifo{ Constants::AnalysisFifoCapacitySamples };
+  juce::AudioBuffer<float> _analysisFifoMonoStorage{ 1, Constants::AnalysisFifoCapacitySamples };
 
   // processBlock Helpers
   struct InputPointers { const float* L; const float* R; };

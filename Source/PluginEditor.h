@@ -4,6 +4,7 @@
 #include "PluginProcessor.h"
 #include "LifeGridComponent.h"
 #include "ControlPanelComponent.h"
+#include "Constants.h"
 
 struct Bands
 {
@@ -20,12 +21,7 @@ class GOLEQAudioProcessorEditor :
   public juce::ComboBox::Listener
 {
 public:
-
-  // Configuration // this is duplicate code, fix it
-  static constexpr int kFFTOrder                    = 11;             // 2048-point FFT
-  static constexpr int kFFTSize                     = 1 << kFFTOrder;
-  static constexpr int kAnalysisFifoCapacitySamples = kFFTSize * 8;   // 8 windows of headroom
-  static float smoothAR(float x, float y) { const float a = 0.35f, r = 0.08f; return y + (x - y) * ((x > y) ? a : r); }
+  //static float smoothAR(float x, float y) { const float a = 0.35f, r = 0.08f; return y + (x - y) * ((x > y) ? a : r); }
 
   GOLEQAudioProcessorEditor(GOLEQAudioProcessor&);
   ~GOLEQAudioProcessorEditor() override;
@@ -53,11 +49,11 @@ private:
   int _pendingGridWidth = 72;
   int _pendingGridHeight = 128;
 
-  juce::dsp::FFT _fft{ kFFTOrder };
-  std::array<float, 2 * kFFTSize> _FFTData {};
-  std::array<float, kFFTSize> _window{};
+  juce::dsp::FFT _fft{ Constants::FFTOrder };
+  std::array<float, 2 * Constants::FFTSize> _FFTData {};
+  std::array<float, Constants::FFTSize> _window{};
   bool _windowInit = false;
-  Bands bandsSm;
+  Bands smoothBands;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GOLEQAudioProcessorEditor)
 };
