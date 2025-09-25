@@ -53,7 +53,7 @@ private:
   std::array<float, 2 * Constants::FFTSize> _FFTData {};
   std::array<float, Constants::FFTSize> _window{};
   bool _windowInit = false;
-  Bands smoothBands;
+  Bands _smoothBands;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GOLEQAudioProcessorEditor)
 };

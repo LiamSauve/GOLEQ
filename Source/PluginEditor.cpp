@@ -193,6 +193,6 @@ void GOLEQAudioProcessorEditor::timerCallback()
   {
     const float uAudio = juce::jlimit(0.0f, 1.0f, audioProcessor._rmsAtomic.load());
     DBG(juce::String::formatted("Bands  B=%.2f  M=%.2f  H=%.2f  |  Level=%.2f",
-      bandsSm.B, bandsSm.M, bandsSm.H, uAudio));
+      _smoothBands.B, _smoothBands.M, _smoothBands.H, uAudio));
   }
 }
