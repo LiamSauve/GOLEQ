@@ -19,36 +19,98 @@ GOLEQAudioProcessor::~GOLEQAudioProcessor()
 {
 }
 
-const juce::String GOLEQAudioProcessor::getName() const
+// JUCE Lifecycle
+void GOLEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    return JucePlugin_Name;
+  juce::ignoreUnused(sampleRate);
+  juce::ignoreUnused(samplesPerBlock);
 }
 
+void GOLEQAudioProcessor::releaseResources(){}
+
+#ifndef JucePlugin_PreferredChannelConfigurations
+bool GOLEQAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+{
+#if JucePlugin_IsMidiEffect
+  juce::ignoreUnused(layouts);
+  return true;
+#else
+  if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
+    && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+  {
+    return false;
+  }
+
+#if ! JucePlugin_IsSynth
+  if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+  {
+    return false;
+  }
+#endif
+
+  return true;
+#endif
+}
+#endif
+
+void GOLEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
+                                       juce::MidiBuffer& midiMessages)
+{
+  juce::ignoreUnused(midiMessages);
+  juce::ScopedNoDenormals noDenormals;
+
+  const int numSamples = buffer.getNumSamples();
+  const auto pointers = GetInputPointers(buffer);
+  UpdateRMS(pointers.L, pointers.R, numSamples);
+  PushMonoToFIFO(pointers.L, pointers.R, numSamples);
+  MirrorRightToLeftIfStereo(buffer);
+  ClearExtraOutputs(buffer);
+  ApplyEffect(buffer);
+}
+
+// Editor
+juce::AudioProcessorEditor* GOLEQAudioProcessor::createEditor()
+{
+  return new GOLEQAudioProcessorEditor(*this);
+}
+
+bool GOLEQAudioProcessor::hasEditor() const
+{
+  return true; // (change this to false if you choose to not supply an editor)
+}
+
+// Identity
+const juce::String GOLEQAudioProcessor::getName() const
+{
+  return JucePlugin_Name;
+}
+
+// MIDI
 bool GOLEQAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
-    return false;
-   #endif
+#if JucePlugin_WantsMidiInput
+  return true;
+#else
+  return false;
+#endif
 }
 
 bool GOLEQAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
-    return false;
-   #endif
+#if JucePlugin_ProducesMidiOutput
+  return true;
+#else
+  return false;
+#endif
 }
 
 bool GOLEQAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
-    return false;
-   #endif
+#if JucePlugin_IsMidiEffect
+  return true;
+#else
+  return false;
+#endif
 }
 
 double GOLEQAudioProcessor::getTailLengthSeconds() const
@@ -56,6 +118,7 @@ double GOLEQAudioProcessor::getTailLengthSeconds() const
   return 0.0;
 }
 
+// Program
 int GOLEQAudioProcessor::getNumPrograms()
 {
   return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
@@ -67,134 +130,32 @@ int GOLEQAudioProcessor::getCurrentProgram()
   return 0;
 }
 
-void GOLEQAudioProcessor::setCurrentProgram (int index)
+void GOLEQAudioProcessor::setCurrentProgram(int index)
 {
 }
 
-const juce::String GOLEQAudioProcessor::getProgramName (int index)
+const juce::String GOLEQAudioProcessor::getProgramName(int index)
 {
-    return {};
+  return {};
 }
 
-void GOLEQAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void GOLEQAudioProcessor::changeProgramName(int index, const juce::String& newName)
 {
 }
 
-void GOLEQAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
-{
-  // Use this method as the place to do any pre-playback
-  // initialisation that you need..
-
-  //const int maxDelaySamples = static_cast<int>(sampleRate * 0.75); // 750ms max
-  //_leftDelayBuffer.resize(maxDelaySamples, 0.0f);
-  //_rightDelayBuffer.resize(maxDelaySamples, 0.0f);
-  //
-  //_leftWriteIndex = 0;
-  //_rightWriteIndex = 0;
-
-}
-
-void GOLEQAudioProcessor::releaseResources()
-{
-  // When playback stops, you can use this as an opportunity to free up any
-  // spare memory, etc.
-}
-
-#ifndef JucePlugin_PreferredChannelConfigurations
-bool GOLEQAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
-{
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
-    return true;
-  #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
-
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
-    return true;
-  #endif
-}
-#endif
-
-void GOLEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
-{
-  const int numSamples = buffer.getNumSamples();
-  const float* L = buffer.getReadPointer(0);
-  const float* R = (getTotalNumInputChannels() > 1) ? buffer.getReadPointer(1) : nullptr;
-
-  //
-  double s = 0.0;
-  for (int i = 0; i < numSamples; ++i)
-  {
-    const float m = 0.5f * (L[i] + (R ? R[i] : L[i]));
-    s += double(m) * double(m);
-  }
-  _rmsAtomic.store(std::sqrt(s / std::max(1, numSamples)), std::memory_order_relaxed);
-  PushMonoToFIFO(L, R, numSamples);
-
-  juce::ScopedNoDenormals noDenormals;
-
-  const int totalNumInputChannels = getTotalNumInputChannels();
-  const int totalNumOutputChannels = getTotalNumOutputChannels();
-
-  // Copy right input channel to left channel
-  if (totalNumInputChannels >= 2) // check we have at least two input channels
-  {
-    const float* rightIn = buffer.getReadPointer(1);
-    float* leftInOut = buffer.getWritePointer(0);
-    float* rightInOut = buffer.getWritePointer(1);
-
-    for (int i = 0; i < numSamples; ++i)
-    {
-      leftInOut[i] = rightIn[i]; // duplicate right channel
-      rightInOut[i] = rightIn[i]; // keep original right input
-    }
-  }
-
-  // Clear any extra output channels beyond input channels
-  for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-  {
-    buffer.clear(i, 0, numSamples);
-  }
-
-  // Apply the delay effect
-  ApplyEffect(buffer);
-}
-
-bool GOLEQAudioProcessor::hasEditor() const
-{
-  return true; // (change this to false if you choose to not supply an editor)
-}
-
-juce::AudioProcessorEditor* GOLEQAudioProcessor::createEditor()
-{
-  return new GOLEQAudioProcessorEditor(*this);
-}
-
+// State
 void GOLEQAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
-  // You should use this method to store your parameters in the memory block.
-  // You could do that either as raw data, or use the XML or ValueTree classes
-  // as intermediaries to make it easy to save and load complex data.
+  juce::ignoreUnused(destData);
 }
 
 void GOLEQAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-  // You should use this method to restore your parameters from this memory block,
-  // whose contents will have been created by the getStateInformation() call.
+  juce::ignoreUnused(data);
+  juce::ignoreUnused(sizeInBytes);
 }
 
-
+// Public API
 void GOLEQAudioProcessor::SetLifeInterface(const ILife* iLifePtr)
 {
   _life = iLifePtr;
@@ -233,34 +194,92 @@ void GOLEQAudioProcessor::PushMonoToFIFO(const float* L, const float* R, int num
   int sizeB;
 
   _analysisFifo.prepareToWrite(numSamples, startA, sizeA, startB, sizeB);
+
   if (sizeA > 0)
   {
-    auto* dst = _analysisFifoMonoStorage.getWritePointer(0, startA);
+    float* dst = _analysisFifoMonoStorage.getWritePointer(0, startA);
     for (int i = 0; i < sizeA; ++i)
     {
-      const float m = 0.5f * (L[i] + (R ? R[i] : L[i])); dst[i] = m;
+      const float m = 0.5f * (L[i] + (R ? R[i] : L[i]));
+      dst[i] = m;
     }
   }
+
   if (sizeB > 0)
   {
-    auto* dst = _analysisFifoMonoStorage.getWritePointer(0, startB);
+    float* dst = _analysisFifoMonoStorage.getWritePointer(0, startB);
     for (int i = 0; i < sizeB; ++i)
     {
-      const int j = i + sizeA; const float m = 0.5f * (L[j] + (R ? R[j] : L[j])); dst[i] = m;
+      const int j = i + sizeA;
+      const float m = 0.5f * (L[j] + (R ? R[j] : L[j]));
+      dst[i] = m;
     }
   }
+
   _analysisFifo.finishedWrite(sizeA + sizeB);
 }
 
+// private
 void GOLEQAudioProcessor::ApplyEffect(juce::AudioBuffer<float>& buffer)
 {
-  if (!_life)
+  juce::ignoreUnused(buffer);
+
+  if (_life == nullptr)
   {
     return;
   }
 }
 
-// This creates new instances of the plugin..
+GOLEQAudioProcessor::InputPointers
+GOLEQAudioProcessor::GetInputPointers(const juce::AudioBuffer<float>& buffer) const
+{
+  const int totalNumInputChannels = getTotalNumInputChannels();
+  const int bufferNumChannels = buffer.getNumChannels();
+
+  const float* L = buffer.getReadPointer(0);
+  const float* R = (totalNumInputChannels > 1 && bufferNumChannels > 1)
+    ? buffer.getReadPointer(1)
+    : nullptr;
+
+  return { L, R };
+}
+
+void GOLEQAudioProcessor::UpdateRMS(const float* L, const float* R, int numSamples)
+{
+  double sumSquares = 0.0;
+  for (int i = 0; i < numSamples; ++i)
+  {
+    const float m = 0.5f * (L[i] + (R ? R[i] : L[i]));
+    sumSquares += static_cast<double>(m) * static_cast<double>(m);
+  }
+
+  const float rms = std::sqrt(sumSquares / std::max(1, numSamples));
+  _rmsAtomic.store(rms, std::memory_order_relaxed);
+}
+
+void GOLEQAudioProcessor::MirrorRightToLeftIfStereo(juce::AudioBuffer<float>& buffer) const
+{
+  const int totalNumInputChannels = getTotalNumInputChannels();
+  const int bufferNumChannels = buffer.getNumChannels();
+
+  if (totalNumInputChannels > 1 && bufferNumChannels > 1)
+  {
+    buffer.copyFrom(0, 0, buffer, 1, 0, buffer.getNumSamples());
+  }
+}
+
+void GOLEQAudioProcessor::ClearExtraOutputs(juce::AudioBuffer<float>& buffer) const
+{
+  const int totalNumInputChannels = getTotalNumInputChannels();
+  const int bufferNumChannels = buffer.getNumChannels();
+
+  for (int ch = totalNumInputChannels; ch < bufferNumChannels; ++ch)
+  {
+    buffer.clear(ch, 0, buffer.getNumSamples());
+  }
+}
+
+// Factory
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
   return new GOLEQAudioProcessor();

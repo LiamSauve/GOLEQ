@@ -63,9 +63,6 @@ namespace Constants
   static const juce::String FunkyVertShaderLocation   = ShaderPathPrefix + "funkylife.vert.glsl";
   static const juce::String NeonFragShaderLocation    = ShaderPathPrefix + "neonlife.frag.glsl";
   static const juce::String NeonVertShaderLocation    = ShaderPathPrefix + "neonlife.vert.glsl";
-
-  // FIFO
-
 }
 
 enum CAVariant

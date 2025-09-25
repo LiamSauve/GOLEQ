@@ -12,10 +12,13 @@ GOLEQAudioProcessorEditor::GOLEQAudioProcessorEditor(GOLEQAudioProcessor& p)
   AttachListeners();
 
   _lifeGridComponent.setBounds(getLocalBounds());
+
+  startTimerHz(60);
 }
 
 GOLEQAudioProcessorEditor::~GOLEQAudioProcessorEditor()
 {
+  stopTimer();
 }
 
 void GOLEQAudioProcessorEditor::ResizeGrid(int newWidth, int newHeight)
@@ -109,4 +112,87 @@ void GOLEQAudioProcessorEditor::AttachListeners()
   _controlPanelComponent.GetNextGenerationButton().addListener(this);
   _controlPanelComponent.GetCAVariantDropdown().addListener(this);
   _controlPanelComponent.GetEffectTypeDropdown().addListener(this);
+}
+
+void GOLEQAudioProcessorEditor::UpdateAudioBands()
+{
+  if (!_windowInit)
+  {
+    for (int i = 0; i < kFFTSize; ++i)
+    {
+      _window[i] = 0.5f * (1.0f - std::cos(2.0f * juce::MathConstants<float>::pi * i / (kFFTSize - 1)));
+    }
+    _windowInit = true;
+  }
+
+  std::array<float, kFFTSize> mono {};
+  int got = audioProcessor.ReadAudioForFFT(mono.data(), kFFTSize);
+  if (got < kFFTSize)
+  {
+    return;
+  }
+
+  for (int i = 0; i < kFFTSize; ++i)
+  {
+    _FFTData[i] = mono[i] * _window[i];
+  }
+  std::fill(_FFTData.begin() + kFFTSize, _FFTData.end(), 0.0f);
+
+  // magnitudes in-place
+  _fft.performFrequencyOnlyForwardTransform(_FFTData.data());
+
+  // bin helpers
+  const float sampleRate = (float)audioProcessor.getSampleRate();
+  const int nyquistBin = kFFTSize / 2;
+  auto hzToBin = [sampleRate, nyquistBin](float hz)
+    {
+      const int bin = static_cast<int>(std::lround(hz * kFFTSize / sampleRate));
+      return juce::jlimit(0, nyquistBin, bin);
+    };
+
+  // Band edges (low / mid / high)
+  // todo: define these values in constants.h
+  const int lowStartBin   = hzToBin(20.0f);
+  const int lowEndBin     = hzToBin(140.0f);
+  const int midStartBin   = std::min(lowEndBin + 1, nyquistBin);
+  const int midEndBin     = hzToBin(2000.0f);
+  const int highStartBin  = std::min(midEndBin + 1, nyquistBin);
+  const int highEndBin    = hzToBin(8000.0f);
+
+  auto bandAverage = [&](int start, int end)
+    {
+      start = juce::jlimit(0, nyquistBin, start);
+      end = juce::jlimit(0, nyquistBin, end);
+      if (end <= start)
+      {
+        return 0.0f;
+      }
+      double s = 0.0f;
+      for (int i = start; i <= end; ++i)
+      {
+        s += _FFTData[i];
+      }
+      float v = (float)(s / double(end - start + 1));
+      return juce::jlimit(0.0f, 1.0f, v * 3.0f);
+    };
+
+  const float Braw = bandAverage(lowStartBin, lowEndBin);
+  const float Mraw = bandAverage(midStartBin, midEndBin);
+  const float Hraw = bandAverage(highStartBin, highEndBin);
+
+  bandsSm.B = smoothAR(Braw, bandsSm.B);
+  bandsSm.M = smoothAR(Mraw, bandsSm.M);
+  bandsSm.H = smoothAR(Hraw, bandsSm.H);
+}
+
+void GOLEQAudioProcessorEditor::timerCallback()
+{
+  UpdateAudioBands();
+
+  if ((++debugPrintEveryNFrames % 15) == 0)
+  {
+    const float uAudio = juce::jlimit(0.0f, 1.0f, audioProcessor._rmsAtomic.load());
+    DBG(juce::String::formatted("Bands  B=%.2f  M=%.2f  H=%.2f  |  Level=%.2f",
+      bandsSm.B, bandsSm.M, bandsSm.H, uAudio));
+  }
 }
