@@ -13,10 +13,12 @@ GOLEQAudioProcessor::GOLEQAudioProcessor()
                        )
 #endif
 {
+  InitialiseLogging(true);
 }
 
 GOLEQAudioProcessor::~GOLEQAudioProcessor()
 {
+  InitialiseLogging(false);
 }
 
 // JUCE Lifecycle
@@ -66,6 +68,40 @@ void GOLEQAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   MirrorRightToLeftIfStereo(buffer);
   ClearExtraOutputs(buffer);
   ApplyEffect(buffer);
+}
+
+// Logging
+void GOLEQAudioProcessor::InitialiseLogging(bool init)
+{
+  if (!init)
+  {
+    const int n = --_instanceCount;
+    if (n == 0)
+    {
+      juce::Logger::writeToLog("Logger stopping");
+      juce::Logger::setCurrentLogger(nullptr);
+      _logger.reset();
+    }
+    return;
+  }
+
+  const int n = ++_instanceCount;
+  if (n == 1)
+  {
+    auto dir = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory)
+      .getChildFile("GOLEQLogs");
+    dir.createDirectory();
+    auto file = dir.getNonexistentChildFile("GOLEQ", ".log");
+    _logger = std::make_unique<juce::FileLogger>(file, "GOLEQ session start", 0);
+    juce::Logger::setCurrentLogger(_logger.get());
+    juce::Logger::writeToLog("Logger started: " + file.getFullPathName());
+    int bp = 1;
+  }
+}
+
+void GOLEQAudioProcessor::Log(const juce::String& s)
+{
+  juce::Logger::writeToLog(s);
 }
 
 // Editor

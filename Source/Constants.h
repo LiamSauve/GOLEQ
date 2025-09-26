@@ -89,6 +89,27 @@ namespace Constants
     }
   }
 
+  namespace GLDebug
+  {
+    // NVIDIA-only, notification-level message IDs that tend to be noisy.
+    // Meanings can vary by driver version; treat these as "mute this chatter".
+    namespace NV
+    {
+      using Id = std::uint32_t; // matches GLuint width without pulling in GL headers
+
+      inline constexpr Id BUFFER_DETAILED_INFO = 131185; // e.g. "Buffer detailed info… will use VIDEO memory"
+      inline constexpr Id OTHER_INFO_131204 = 131204; // generic info/other spam
+      inline constexpr Id SHADER_PROGRAM_INFO = 131218; // shader/program state/info noise
+      inline constexpr Id OTHER_INFO_131222 = 131222; // generic info/other spam
+    }
+
+    inline constexpr std::array<std::uint32_t, 4> NV_NOISY_NOTIFICATION_IDS = {
+        NV::BUFFER_DETAILED_INFO,
+        NV::OTHER_INFO_131204,
+        NV::SHADER_PROGRAM_INFO,
+        NV::OTHER_INFO_131222
+    };
+  }
 }
 
 enum CAVariant

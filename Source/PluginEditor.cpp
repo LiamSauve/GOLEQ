@@ -189,10 +189,13 @@ void GOLEQAudioProcessorEditor::timerCallback()
 {
   UpdateAudioBands();
 
+
   if ((++debugPrintEveryNFrames % 15) == 0)
   {
     const float uAudio = juce::jlimit(0.0f, 1.0f, audioProcessor._rmsAtomic.load());
-    DBG(juce::String::formatted("Bands  B=%.2f  M=%.2f  H=%.2f  |  Level=%.2f",
+    //DBG(juce::String::formatted("Bands  B=%.2f  M=%.2f  H=%.2f  |  Level=%.2f",
+    //  _smoothBands.B, _smoothBands.M, _smoothBands.H, uAudio));
+    audioProcessor.Log(juce::String::formatted("Bands  B=%.2f  M=%.2f  H=%.2f  |  Level=%.2f",
       _smoothBands.B, _smoothBands.M, _smoothBands.H, uAudio));
   }
 }

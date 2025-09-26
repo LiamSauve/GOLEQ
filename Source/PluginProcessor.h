@@ -21,6 +21,10 @@ public:
 #endif
   void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
+  // Logging
+  void InitialiseLogging(bool init);
+  void Log(const juce::String& s);
+
   // Editor
   juce::AudioProcessorEditor* createEditor() override;
   bool hasEditor() const override;
@@ -57,6 +61,10 @@ private:
 
   // Dependencies
   const ILife* _life = nullptr;
+
+  // Logging
+  std::atomic<int> GOLEQAudioProcessor::_instanceCount{ 0 };
+  std::unique_ptr<juce::FileLogger> GOLEQAudioProcessor::_logger;
 
   // Analysis
   juce::AbstractFifo       _analysisFifo{ Constants::AnalysisFifoCapacitySamples };

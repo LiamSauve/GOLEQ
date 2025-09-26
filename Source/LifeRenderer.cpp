@@ -43,12 +43,12 @@ void LifeRenderer::initialise_SetGLDebugOutput()
       GL_DEBUG_SEVERITY_NOTIFICATION,
       0, nullptr, GL_FALSE);
 
-    // silence common NVIDIA "Buffer detailed info…" IDs
-    const GLuint noisyIds[] = { 131185, 131204, 131218, 131222 };
     glDebugMessageControl(GL_DEBUG_SOURCE_API,
-      GL_DEBUG_TYPE_OTHER,
-      GL_DONT_CARE,
-      (GLsizei)std::size(noisyIds), noisyIds, GL_FALSE);
+                          GL_DEBUG_TYPE_OTHER,
+                          GL_DONT_CARE,
+                          (GLsizei)Constants::GLDebug::NV_NOISY_NOTIFICATION_IDS.size(),
+                          Constants::GLDebug::NV_NOISY_NOTIFICATION_IDS.data(),
+                          GL_FALSE);
   }
 }
 
