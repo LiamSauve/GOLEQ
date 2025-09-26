@@ -11,12 +11,11 @@ LifeGridComponent::LifeGridComponent() :
   _life.Randomize();
 
   addAndMakeVisible(_renderer);
-  startTimerHz(10); // 10 times per second for now
+  startTimerHz(10);
 }
 
 LifeGridComponent::~LifeGridComponent()
 {
-  //_glContext.detach(); // todo?
 }
 
 void LifeGridComponent::resized()

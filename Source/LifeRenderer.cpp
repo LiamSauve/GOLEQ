@@ -12,6 +12,8 @@ LifeRenderer::LifeRenderer() :
   _renderHeight(0),
   _isDataReady(false)
 {
+  openGLContext.detach();
+  openGLContext.attachTo(*this);
   setSize(Constants::WindowWidth, Constants::SimulationHeight);
 }
 
@@ -27,9 +29,27 @@ void LifeRenderer::paint(juce::Graphics& g)
 
 void LifeRenderer::initialise()
 {
+  initialise_SetGLDebugOutput();
   initialise_LoadShader();
   initialise_SetupQuadVertexData();
   initialise_ConfigureVertexAttributes();
+}
+
+void LifeRenderer::initialise_SetGLDebugOutput()
+{
+  if (glDebugMessageControl != nullptr)
+  {
+    glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
+      GL_DEBUG_SEVERITY_NOTIFICATION,
+      0, nullptr, GL_FALSE);
+
+    // silence common NVIDIA "Buffer detailed info…" IDs
+    const GLuint noisyIds[] = { 131185, 131204, 131218, 131222 };
+    glDebugMessageControl(GL_DEBUG_SOURCE_API,
+      GL_DEBUG_TYPE_OTHER,
+      GL_DONT_CARE,
+      (GLsizei)std::size(noisyIds), noisyIds, GL_FALSE);
+  }
 }
 
 void LifeRenderer::initialise_LoadShader()
@@ -96,7 +116,10 @@ void LifeRenderer::shutdown()
 void LifeRenderer::render()
 {
   render_SetupViewportAndClear();
-  if (!_shader) return;
+  if (!_shader)
+  {
+    return;
+  }
 
   render_UpdateTextureIfReady();
   render_UseShaderAndBindTexture();
@@ -122,13 +145,15 @@ void LifeRenderer::render_UpdateTextureIfReady()
     std::vector<uint8_t> pixelData = FlattenRenderDataToPixels();
 
     if (_lifeTexture == 0)
+    {
       glGenTextures(1, &_lifeTexture);
+    }
 
     glBindTexture(GL_TEXTURE_2D, _lifeTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG8,
-      _renderWidth, _renderHeight,
-      0, GL_RG, GL_UNSIGNED_BYTE,
-      pixelData.data());
+                 _renderWidth, _renderHeight,
+                 0, GL_RG, GL_UNSIGNED_BYTE,
+                 pixelData.data());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -263,3 +288,15 @@ std::vector<uint8_t> LifeRenderer::FlattenRenderDataToPixels()
 
   return pixels;
 }
+
+//void newOpenGLContextCreated()
+//{
+//
+//}
+//void renderOpenGL()
+//{
+//
+//}
+//void openGLContextClosing()
+//{
+//}

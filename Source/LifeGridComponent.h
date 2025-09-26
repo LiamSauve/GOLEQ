@@ -37,7 +37,6 @@ private:
   bool _isDragging;
   bool _dragModeErase;
   juce::Point<float> _cellPaintSize;
-  juce::OpenGLContext _glContext;
 
   //juce::Colour GetAgeColour(int age);
 };

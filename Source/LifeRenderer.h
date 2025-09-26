@@ -19,6 +19,7 @@ public:
   void paint(juce::Graphics& g);
 
   void initialise() override;
+  void initialise_SetGLDebugOutput();
   void initialise_LoadShader();
   void initialise_SetupQuadVertexData();
   void initialise_ConfigureVertexAttributes();
